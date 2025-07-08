@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduction to Q-Learning - Your Name</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="../index.html">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../blog.html">Blog</a>
+                <a href="../projects.html">Projects</a>
+                <a href="../forum.html">Forum</a>
+            </nav>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="content">
+            <h1>Introduction to Q-Learning</h1>
+            <div class="blog-meta">January 15, 2024 • <span class="tag">q-learning</span> <span class="tag">basics</span></div>
+            
+            <p>
+                Q-Learning is one of the most fundamental algorithms in reinforcement learning. It's a model-free, 
+                off-policy algorithm that learns the value of actions in states without requiring a model of the environment.
+            </p>
+            
+            <h2>The Q-Function</h2>
+            <p>
+                At the heart of Q-Learning is the action-value function, or Q-function, denoted as $Q(s, a)$. 
+                This function represents the expected cumulative reward of taking action $a$ in state $s$ and then 
+                following the optimal policy thereafter.
+            </p>
+            
+            <p>The optimal Q-function satisfies the Bellman optimality equation:</p>
+            
+            $$Q^*(s, a) = \mathbb{E}[r + \gamma \max_{a'} Q^*(s', a') | s, a]$$
+            
+            <p>where:</p>
+            <ul>
+                <li>$r$ is the immediate reward</li>
+                <li>$\gamma$ is the discount factor (0 ≤ γ < 1)</li>
+                <li>$s'$ is the next state</li>
+                <li>$a'$ is the next action</li>
+            </ul>
+            
+            <h2>The Q-Learning Update Rule</h2>
+            <p>
+                Q-Learning approximates the optimal Q-function through iterative updates. After each step, 
+                we update our Q-value estimate using:
+            </p>
+            
+            $$Q(s, a) \leftarrow Q(s, a) + \alpha [r + \gamma \max_{a'} Q(s', a') - Q(s, a)]$$
+            
+            <p>
+                This update rule moves the current Q-value toward the target value $r + \gamma \max_{a'} Q(s', a')$ 
+                with a learning rate $\alpha$.
+            </p>
+            
+            <h2>Implementation Example</h2>
+            <p>Here's a simple implementation of Q-Learning for a gridworld environment:</p>
+            
+            <pre><code>import numpy as np
+
+class QLearningAgent:
+    def __init__(self, n_states, n_actions, alpha=0.1, gamma=0.99, epsilon=0.1):
+        self.Q = np.zeros((n_states, n_actions))
+        self.alpha = alpha
+        self.gamma = gamma
+        self.epsilon = epsilon
+    
+    def choose_action(self, state):
+        if np.random.random() < self.epsilon:
+            return np.random.randint(len(self.Q[state]))
+        else:
+            return np.argmax(self.Q[state])
+    
+    def update(self, state, action, reward, next_state):
+        target = reward + self.gamma * np.max(self.Q[next_state])
+        self.Q[state, action] += self.alpha * (target - self.Q[state, action])</code></pre>
+            
+            <h2>Key Properties</h2>
+            <p>Q-Learning has several important properties:</p>
+            <ul>
+                <li><strong>Model-free:</strong> Doesn't require knowledge of transition probabilities</li>
+                <li><strong>Off-policy:</strong> Can learn from any policy, not just the one being followed</li>
+                <li><strong>Convergence:</strong> Guaranteed to converge to optimal Q-values under certain conditions</li>
+            </ul>
+            
+            <p>
+                In the next post, we'll explore how Deep Q-Networks extend this algorithm to handle 
+                high-dimensional state spaces using neural networks.
+            </p>
+            
+            <p><a href="../blog.html">← Back to Blog</a></p>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/contrib/auto-render.min.js"></script>
+    <script src="../js/main.js"></script>
+</body>
+</html>
