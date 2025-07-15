@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
 let blogData = {};
 
 function initializeBlogData() {
-    const storedData = sessionStorage.getItem('blogData');
+    const storedData = localStorage.getItem('blogData');
     if (storedData) {
         blogData = JSON.parse(storedData);
     } else {
@@ -54,6 +54,12 @@ function initializeBlogData() {
                 2: { count: 38, liked: false },
                 3: { count: 56, liked: false },
                 4: { count: 62, liked: false }
+            },
+            views: {
+                1: 1234,
+                2: 980,
+                3: 1567,
+                4: 2145
             },
             comments: {
                 1: [
@@ -71,12 +77,60 @@ function initializeBlogData() {
                 ]
             }
         };
+        saveBlogData();
     }
+
+    // Increment view count if on blog post page
+    const postElement = document.querySelector('[data-post-id]');
+    if (postElement && window.location.pathname.includes('intro-to-q-learning.html')) {
+        const postId = postElement.getAttribute('data-post-id');
+        if (blogData.views[postId]) {
+            blogData.views[postId]++;
+            saveBlogData();
+        }
+    }
+
     updateBlogUI();
 }
 
 function saveBlogData() {
-    sessionStorage.setItem('blogData', JSON.stringify(blogData));
+    localStorage.setItem('blogData', JSON.stringify(blogData));
+}
+
+function updateBlogUI() {
+    // Update like counts and states
+    Object.keys(blogData.likes).forEach(postId => {
+        const likeBtn = document.querySelector(`[data-post-id="${postId}"] .like-btn`);
+        const likeCount = document.querySelector(`[data-post-id="${postId}"] .like-count`);
+
+        if (likeBtn && likeCount) {
+            likeCount.textContent = blogData.likes[postId].count;
+            if (blogData.likes[postId].liked) {
+                likeBtn.classList.add('liked');
+                likeBtn.querySelector('i').classList.remove('far');
+                likeBtn.querySelector('i').classList.add('fas');
+            }
+        }
+
+        // Update comment counts
+        const commentCount = document.querySelector(`[data-post-id="${postId}"] .comment-count`);
+        if (commentCount && blogData.comments[postId]) {
+            commentCount.textContent = blogData.comments[postId].length;
+        }
+
+        // Update view counts
+        const viewCount = document.querySelector(`[data-post-id="${postId}"] .view-count`);
+        if (viewCount && blogData.views[postId]) {
+            viewCount.textContent = formatViewCount(blogData.views[postId]);
+        }
+    });
+}
+
+function formatViewCount(count) {
+    if (count >= 1000) {
+        return (count / 1000).toFixed(1) + 'k';
+    }
+    return count.toString();
 }
 
 function updateBlogUI() {
@@ -137,14 +191,28 @@ function toggleLike(postId) {
 
 function toggleComments(postId) {
     const commentsSection = document.getElementById(`comments-${postId}`);
-    const isVisible = commentsSection.style.display !== 'none';
 
-    if (isVisible) {
-        commentsSection.style.display = 'none';
-    } else {
-        commentsSection.style.display = 'block';
-        // Load comments
-        loadComments(postId);
+    // For blog post pages, the comments section is always visible
+    if (window.location.pathname.includes('intro-to-q-learning.html')) {
+        // Scroll to comments section on blog post page
+        const commentSection = document.querySelector('.post-comment-section');
+        if (commentSection) {
+            commentSection.scrollIntoView({ behavior: 'smooth' });
+        }
+        return;
+    }
+
+    // For blog listing page, toggle visibility
+    if (commentsSection) {
+        const isVisible = commentsSection.style.display !== 'none';
+
+        if (isVisible) {
+            commentsSection.style.display = 'none';
+        } else {
+            commentsSection.style.display = 'block';
+            // Load comments
+            loadComments(postId);
+        }
     }
 }
 
@@ -210,8 +278,8 @@ if (document.getElementById('forum-posts')) {
 
     // Initialize forum with sample data
     function initializeForum() {
-        // Check if we have stored posts in sessionStorage
-        const storedPosts = sessionStorage.getItem('forumPosts');
+        // Check if we have stored posts in localStorage
+        const storedPosts = localStorage.getItem('forumPosts');
 
         if (storedPosts) {
             forumPosts = JSON.parse(storedPosts);
@@ -223,7 +291,7 @@ if (document.getElementById('forum-posts')) {
                     title: "How to handle continuous action spaces in RL?",
                     author: "Alex Chen",
                     date: "2024-01-10",
-                    content: "I'm working on a robotics project where the action space is continuous. What are the best algorithms to use? I've heard about.html DDPG and SAC but not sure which to choose.",
+                    content: "I'm working on a robotics project where the action space is continuous. What are the best algorithms to use? I've heard about DDPG and SAC but not sure which to choose.",
                     answers: [
                         {
                             author: "Sarah Liu",
@@ -241,8 +309,8 @@ if (document.getElementById('forum-posts')) {
                     answers: []
                 }
             ];
-            // Store in sessionStorage
-            sessionStorage.setItem('forumPosts', JSON.stringify(forumPosts));
+            // Store in localStorage
+            localStorage.setItem('forumPosts', JSON.stringify(forumPosts));
         }
 
         displayForumPosts();
@@ -305,7 +373,7 @@ if (document.getElementById('forum-posts')) {
         };
 
         forumPosts.unshift(newPost);
-        sessionStorage.setItem('forumPosts', JSON.stringify(forumPosts));
+        localStorage.setItem('forumPosts', JSON.stringify(forumPosts));
         displayForumPosts();
         closeModal();
 
@@ -335,7 +403,7 @@ if (document.getElementById('forum-posts')) {
                 content: content
             });
 
-            sessionStorage.setItem('forumPosts', JSON.stringify(forumPosts));
+            localStorage.setItem('forumPosts', JSON.stringify(forumPosts));
             displayForumPosts();
         }
     }
@@ -350,4 +418,19 @@ if (document.getElementById('forum-posts')) {
 
     // Initialize forum on page load
     initializeForum();
+}
+
+// Share functionality
+window.sharePost = function() {
+    if (navigator.share) {
+        navigator.share({
+            title: document.title,
+            text: 'Check out this great article on reinforcement learning!',
+            url: window.location.href
+        });
+    } else {
+        // Fallback - copy to clipboard
+        navigator.clipboard.writeText(window.location.href);
+        alert('Link copied to clipboard!');
+    }
 }
