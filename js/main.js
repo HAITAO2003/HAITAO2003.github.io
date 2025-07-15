@@ -1,15 +1,18 @@
 // Add active class to current page nav link
 document.addEventListener('DOMContentLoaded', function() {
     const currentLocation = location.pathname.split('/').pop() || 'index.html';
-    const navLinks = document.querySelectorAll('nav a');
-    
+    const navLinks = document.querySelectorAll('.nav-links a');
+
     navLinks.forEach(link => {
         const href = link.getAttribute('href');
         if (href === currentLocation || (currentLocation === '' && href === 'index.html')) {
             link.classList.add('active');
         }
     });
-    
+
+    // Initialize blog data from sessionStorage
+    initializeBlogData();
+
     // Initialize KaTeX rendering if on a page with math
     if (typeof renderMathInElement !== 'undefined') {
         renderMathInElement(document.body, {
@@ -19,17 +22,197 @@ document.addEventListener('DOMContentLoaded', function() {
             ]
         });
     }
+
+    // Add scroll effect to header
+    let lastScroll = 0;
+    window.addEventListener('scroll', () => {
+        const currentScroll = window.pageYOffset;
+        const header = document.querySelector('header');
+
+        if (currentScroll > 100) {
+            header.style.boxShadow = '0 4px 20px rgba(0,0,0,0.1)';
+        } else {
+            header.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
+        }
+
+        lastScroll = currentScroll;
+    });
 });
+
+// Blog functionality
+let blogData = {};
+
+function initializeBlogData() {
+    const storedData = sessionStorage.getItem('blogData');
+    if (storedData) {
+        blogData = JSON.parse(storedData);
+    } else {
+        // Initialize with default data
+        blogData = {
+            likes: {
+                1: { count: 42, liked: false },
+                2: { count: 38, liked: false },
+                3: { count: 56, liked: false },
+                4: { count: 62, liked: false }
+            },
+            comments: {
+                1: [
+                    { name: "Sarah Chen", date: "2 days ago", text: "Great introduction! The step-by-step breakdown of the Bellman equation really helped me understand the concept." },
+                    { name: "Alex Kumar", date: "1 week ago", text: "Would love to see a follow-up on Double Q-Learning to address the overestimation bias!" }
+                ],
+                2: [
+                    { name: "Michael Park", date: "3 days ago", text: "The visualization of the replay buffer really helped me understand why it's crucial for stability!" }
+                ],
+                3: [
+                    { name: "Emily Zhang", date: "1 week ago", text: "Finally understood why we need baselines! The variance reduction section was particularly helpful." }
+                ],
+                4: [
+                    { name: "David Liu", date: "4 days ago", text: "The comparison table between different actor-critic variants was super useful. Looking forward to the PPO post!" }
+                ]
+            }
+        };
+    }
+    updateBlogUI();
+}
+
+function saveBlogData() {
+    sessionStorage.setItem('blogData', JSON.stringify(blogData));
+}
+
+function updateBlogUI() {
+    // Update like counts and states
+    Object.keys(blogData.likes).forEach(postId => {
+        const likeBtn = document.querySelector(`[data-post-id="${postId}"] .like-btn`);
+        const likeCount = document.querySelector(`[data-post-id="${postId}"] .like-count`);
+
+        if (likeBtn && likeCount) {
+            likeCount.textContent = blogData.likes[postId].count;
+            if (blogData.likes[postId].liked) {
+                likeBtn.classList.add('liked');
+                likeBtn.querySelector('i').classList.remove('far');
+                likeBtn.querySelector('i').classList.add('fas');
+            }
+        }
+
+        // Update comment counts
+        const commentCount = document.querySelector(`[data-post-id="${postId}"] .comment-count`);
+        if (commentCount && blogData.comments[postId]) {
+            commentCount.textContent = blogData.comments[postId].length;
+        }
+    });
+}
+
+function toggleLike(postId) {
+    const likeBtn = document.querySelector(`[data-post-id="${postId}"] .like-btn`);
+    const likeCount = document.querySelector(`[data-post-id="${postId}"] .like-count`);
+    const icon = likeBtn.querySelector('i');
+
+    if (!blogData.likes[postId]) {
+        blogData.likes[postId] = { count: 0, liked: false };
+    }
+
+    if (blogData.likes[postId].liked) {
+        blogData.likes[postId].count--;
+        blogData.likes[postId].liked = false;
+        likeBtn.classList.remove('liked');
+        icon.classList.remove('fas');
+        icon.classList.add('far');
+    } else {
+        blogData.likes[postId].count++;
+        blogData.likes[postId].liked = true;
+        likeBtn.classList.add('liked');
+        icon.classList.remove('far');
+        icon.classList.add('fas');
+    }
+
+    likeCount.textContent = blogData.likes[postId].count;
+    saveBlogData();
+
+    // Add animation
+    likeBtn.style.transform = 'scale(1.2)';
+    setTimeout(() => {
+        likeBtn.style.transform = 'scale(1)';
+    }, 200);
+}
+
+function toggleComments(postId) {
+    const commentsSection = document.getElementById(`comments-${postId}`);
+    const isVisible = commentsSection.style.display !== 'none';
+
+    if (isVisible) {
+        commentsSection.style.display = 'none';
+    } else {
+        commentsSection.style.display = 'block';
+        // Load comments
+        loadComments(postId);
+    }
+}
+
+function loadComments(postId) {
+    const commentsList = document.getElementById(`comments-list-${postId}`);
+    if (!blogData.comments[postId]) {
+        blogData.comments[postId] = [];
+    }
+
+    commentsList.innerHTML = blogData.comments[postId].map(comment => `
+        <div class="comment">
+            <div class="comment-header">
+                <strong>${comment.name}</strong>
+                <span class="comment-date">${comment.date}</span>
+            </div>
+            <p>${comment.text}</p>
+        </div>
+    `).join('');
+}
+
+function addComment(postId) {
+    const nameInput = document.getElementById(`comment-name-${postId}`);
+    const textInput = document.getElementById(`comment-text-${postId}`);
+
+    if (!nameInput.value.trim() || !textInput.value.trim()) {
+        alert('Please enter both your name and comment.');
+        return;
+    }
+
+    if (!blogData.comments[postId]) {
+        blogData.comments[postId] = [];
+    }
+
+    const newComment = {
+        name: nameInput.value.trim(),
+        date: 'just now',
+        text: textInput.value.trim()
+    };
+
+    blogData.comments[postId].unshift(newComment);
+    saveBlogData();
+
+    // Update UI
+    loadComments(postId);
+    const commentCount = document.querySelector(`[data-post-id="${postId}"] .comment-count`);
+    commentCount.textContent = blogData.comments[postId].length;
+
+    // Clear form
+    nameInput.value = '';
+    textInput.value = '';
+
+    // Add animation to new comment
+    const commentsList = document.getElementById(`comments-list-${postId}`);
+    const firstComment = commentsList.firstElementChild;
+    if (firstComment) {
+        firstComment.style.animation = 'slideDown 0.3s ease-out';
+    }
+}
 
 // Forum functionality (only loaded on forum.html)
 if (document.getElementById('forum-posts')) {
     let forumPosts = [];
-    
+
     // Initialize forum with sample data
     function initializeForum() {
         // Check if we have stored posts in sessionStorage
         const storedPosts = sessionStorage.getItem('forumPosts');
-        
+
         if (storedPosts) {
             forumPosts = JSON.parse(storedPosts);
         } else {
@@ -40,7 +223,7 @@ if (document.getElementById('forum-posts')) {
                     title: "How to handle continuous action spaces in RL?",
                     author: "Alex Chen",
                     date: "2024-01-10",
-                    content: "I'm working on a robotics project where the action space is continuous. What are the best algorithms to use? I've heard about DDPG and SAC but not sure which to choose.",
+                    content: "I'm working on a robotics project where the action space is continuous. What are the best algorithms to use? I've heard about.html DDPG and SAC but not sure which to choose.",
                     answers: [
                         {
                             author: "Sarah Liu",
@@ -61,14 +244,14 @@ if (document.getElementById('forum-posts')) {
             // Store in sessionStorage
             sessionStorage.setItem('forumPosts', JSON.stringify(forumPosts));
         }
-        
+
         displayForumPosts();
     }
-    
+
     function displayForumPosts() {
         const container = document.getElementById('forum-posts');
         container.innerHTML = '';
-        
+
         forumPosts.forEach(post => {
             const postElement = document.createElement('div');
             postElement.className = 'forum-post';
@@ -100,18 +283,18 @@ if (document.getElementById('forum-posts')) {
             container.appendChild(postElement);
         });
     }
-    
+
     window.openNewQuestionModal = function() {
         document.getElementById('questionModal').style.display = 'block';
     }
-    
+
     window.closeModal = function() {
         document.getElementById('questionModal').style.display = 'none';
     }
-    
+
     window.submitQuestion = function(event) {
         event.preventDefault();
-        
+
         const newPost = {
             id: forumPosts.length + 1,
             title: document.getElementById('questionTitle').value,
@@ -120,30 +303,30 @@ if (document.getElementById('forum-posts')) {
             date: new Date().toISOString().split('T')[0],
             answers: []
         };
-        
+
         forumPosts.unshift(newPost);
         sessionStorage.setItem('forumPosts', JSON.stringify(forumPosts));
         displayForumPosts();
         closeModal();
-        
+
         // Reset form
         document.getElementById('questionTitle').value = '';
         document.getElementById('questionAuthor').value = '';
         document.getElementById('questionContent').value = '';
     }
-    
+
     window.showAnswerForm = function(postId) {
         document.getElementById(`answer-form-${postId}`).style.display = 'block';
     }
-    
+
     window.hideAnswerForm = function(postId) {
         document.getElementById(`answer-form-${postId}`).style.display = 'none';
     }
-    
+
     window.submitAnswer = function(postId) {
         const author = document.getElementById(`answer-author-${postId}`).value;
         const content = document.getElementById(`answer-content-${postId}`).value;
-        
+
         if (author && content) {
             const post = forumPosts.find(p => p.id === postId);
             post.answers.push({
@@ -151,12 +334,12 @@ if (document.getElementById('forum-posts')) {
                 date: new Date().toISOString().split('T')[0],
                 content: content
             });
-            
+
             sessionStorage.setItem('forumPosts', JSON.stringify(forumPosts));
             displayForumPosts();
         }
     }
-    
+
     // Close modal when clicking outside
     window.onclick = function(event) {
         const modal = document.getElementById('questionModal');
@@ -164,7 +347,7 @@ if (document.getElementById('forum-posts')) {
             closeModal();
         }
     }
-    
+
     // Initialize forum on page load
     initializeForum();
 }

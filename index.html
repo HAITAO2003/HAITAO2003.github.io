@@ -3,57 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Name - Reinforcement Learning</title>
+    <title>Haitao Wang</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <header>
-        <div class="container">
-            <nav>
+<header>
+    <div class="container">
+        <nav>
+            <a href="index.html" class="nav-logo">Haitao Wang</a>
+            <div class="nav-links">
                 <a href="index.html">Home</a>
-                <a href="about.html">About</a>
                 <a href="blog.html">Blog</a>
                 <a href="projects.html">Projects</a>
                 <a href="forum.html">Forum</a>
-            </nav>
-        </div>
-    </header>
-    
-    <div class="container">
-        <div class="hero-section">
-            <img src="images/profile.jpeg" alt="Your Name" class="profile-image">
+            </div>
+        </nav>
+    </div>
+</header>
+
+<div class="container">
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="hero-bg-animation"></div>
+        <div class="hero-content-wrapper">
+            <img src="images/profile.jpeg" alt="Haitao Wang" class="profile-image">
             <div class="hero-content">
-                <h1>Hi, I'm [Your Name]</h1>
-                <p>
-                    Researcher and engineer passionate about reinforcement learning and its applications. 
-                    I explore cutting-edge RL algorithms, build practical implementations, and share insights 
-                    to help others on their AI journey.
+                <h1 class="hero-title">Hi, I'm Haitao Wang</h1>
+                <div class="hero-subtitle">AI Researcher & Final Year CS Student at NUS</div>
+                <p class="hero-description">
+                    Passionate about reinforcement learning and its applications to automated portfolio management
+                    and high-frequency trading systems. I believe in the power of agents that learn through interaction
+                    and can achieve superhuman performance in complex decision-making tasks.
                 </p>
-            </div>
-        </div>
-        
-        <h2 style="margin-bottom: 30px;">Recent Blog Posts</h2>
-        <div class="recent-posts">
-            <a href="blog/intro-to-q-learning.html" class="post-card">
-                <h3>Introduction to Q-Learning</h3>
-                <div class="date">January 15, 2024</div>
-                <p>A comprehensive introduction to Q-Learning, one of the fundamental algorithms in reinforcement learning.</p>
-            </a>
-            
-            <div class="post-card">
-                <h3>Deep Q-Networks (DQN) Explained</h3>
-                <div class="date">January 8, 2024</div>
-                <p>How neural networks revolutionized Q-Learning by enabling agents to learn from high-dimensional inputs.</p>
-            </div>
-            
-            <div class="post-card">
-                <h3>Policy Gradient Methods</h3>
-                <div class="date">December 20, 2023</div>
-                <p>Moving beyond value-based methods, we explore policy gradient algorithms that directly optimize the policy.</p>
+                <div class="hero-links">
+                    <a href="mailto:e1070551@u.nus.edu" class="hero-link"><i class="fas fa-envelope"></i> Email</a>
+                    <a href="https://github.com/HAITAO2003" class="hero-link"><i class="fab fa-github"></i> GitHub</a>
+                    <a href="#research" class="hero-link"><i class="fas fa-microscope"></i> Research</a>
+                </div>
             </div>
         </div>
     </div>
-    
-    <script src="js/main.js"></script>
+
+    <!-- About Section -->
+    <section class="about-section">
+        <div class="section-content">
+            <h2 class="section-title">About Me</h2>
+            <div class="about-grid">
+                <div class="about-text">
+                    <p>
+                        I'm a final year Computer Science student at the National University of Singapore (NUS),
+                        specializing in Artificial Intelligence with a deep focus on reinforcement learning.
+                        My research explores the intersection of RL and financial systems, particularly in
+                        modeling trading environments as complex decision-making problems.
+                    </p>
+                    <p>
+                        My journey in RL began during my undergraduate research, where I became fascinated by
+                        the elegance of agents learning optimal policies through trial and error. This led me
+                        to explore various RL paradigms, from traditional tabular methods to cutting-edge
+                        deep RL algorithms that can handle high-dimensional state spaces and continuous actions.
+                    </p>
+                    <p>
+                        Currently, I'm working on applying meta-reinforcement learning techniques to create
+                        adaptive trading agents that can quickly adjust to changing market conditions. I believe
+                        that RL holds immense potential for solving real-world sequential decision problems,
+                        from robotics to finance.
+                    </p>
+                </div>
+                <div class="skills-card">
+                    <h3>Technical Skills</h3>
+                    <div class="skill-tags">
+                        <span class="skill-tag">Python</span>
+                        <span class="skill-tag">PyTorch</span>
+                        <span class="skill-tag">TensorFlow</span>
+                        <span class="skill-tag">JAX</span>
+                        <span class="skill-tag">OpenAI Gym</span>
+                        <span class="skill-tag">Ray RLlib</span>
+                        <span class="skill-tag">NumPy</span>
+                        <span class="skill-tag">Pandas</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Research Interests -->
+    <section id="research" class="research-section">
+        <div class="section-content">
+            <h2 class="section-title">Research Interests</h2>
+            <div class="research-grid">
+                <div class="research-card">
+                    <div class="research-icon"><i class="fas fa-brain"></i></div>
+                    <h3>Model-Free RL</h3>
+                    <p>Exploring value-based and policy-based methods including DQN, Rainbow, PPO, and SAC for complex environments.</p>
+                </div>
+                <div class="research-card">
+                    <div class="research-icon"><i class="fas fa-project-diagram"></i></div>
+                    <h3>Model-Based RL</h3>
+                    <p>Investigating world models and planning algorithms that can learn environment dynamics for sample-efficient learning.</p>
+                </div>
+                <div class="research-card">
+                    <div class="research-icon"><i class="fas fa-sync-alt"></i></div>
+                    <h3>Meta-RL</h3>
+                    <p>Developing algorithms that can quickly adapt to new tasks and environments with minimal experience.</p>
+                </div>
+                <div class="research-card">
+                    <div class="research-icon"><i class="fas fa-chart-line"></i></div>
+                    <h3>RL in Finance</h3>
+                    <p>Applying RL to portfolio optimization, algorithmic trading, and risk management in financial markets.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recent Blog Posts -->
+    <section class="blog-section">
+        <div class="section-content">
+            <h2 class="section-title">Recent Blog Posts</h2>
+            <div class="recent-posts">
+                <a href="blog/intro-to-q-learning.html" class="post-card">
+                    <div class="post-card-header">
+                        <span class="post-category">Fundamentals</span>
+                        <span class="post-date">January 15, 2024</span>
+                    </div>
+                    <h3>Introduction to Q-Learning</h3>
+                    <p>A comprehensive introduction to Q-Learning, one of the fundamental algorithms in reinforcement learning. We'll explore the mathematical foundations and implement a simple example.</p>
+                    <div class="post-stats">
+                        <span><i class="far fa-heart"></i> 42</span>
+                        <span><i class="far fa-comment"></i> 12</span>
+                        <span><i class="far fa-eye"></i> 1.2k</span>
+                    </div>
+                </a>
+
+                <div class="post-card">
+                    <div class="post-card-header">
+                        <span class="post-category">Deep Learning</span>
+                        <span class="post-date">January 8, 2024</span>
+                    </div>
+                    <h3>Deep Q-Networks (DQN) Explained</h3>
+                    <p>How neural networks revolutionized Q-Learning by enabling agents to learn directly from high-dimensional sensory inputs. We'll implement DQN from scratch.</p>
+                    <div class="post-stats">
+                        <span><i class="far fa-heart"></i> 38</span>
+                        <span><i class="far fa-comment"></i> 8</span>
+                        <span><i class="far fa-eye"></i> 980</span>
+                    </div>
+                </div>
+
+                <div class="post-card">
+                    <div class="post-card-header">
+                        <span class="post-category">Policy Methods</span>
+                        <span class="post-date">December 20, 2023</span>
+                    </div>
+                    <h3>Policy Gradient Methods: REINFORCE</h3>
+                    <p>Moving beyond value-based methods, we explore policy gradient algorithms that directly optimize the policy. Starting with the REINFORCE algorithm.</p>
+                    <div class="post-stats">
+                        <span><i class="far fa-heart"></i> 56</span>
+                        <span><i class="far fa-comment"></i> 15</span>
+                        <span><i class="far fa-eye"></i> 1.5k</span>
+                    </div>
+                </div>
+            </div>
+            <div class="blog-cta">
+                <a href="blog.html" class="btn-primary">View All Posts <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </section>
+</div>
+
+<footer>
+    <div class="container">
+        <p>&copy; 2024 Haitao Wang. Built with passion for RL.</p>
+    </div>
+</footer>
+
+<script src="js/main.js"></script>
 </body>
 </html>

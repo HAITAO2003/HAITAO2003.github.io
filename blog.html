@@ -3,67 +3,251 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog - Your Name</title>
+    <title>Blog - Haitao Wang</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <header>
-        <div class="container">
-            <nav>
+<header>
+    <div class="container">
+        <nav>
+            <a href="index.html" class="nav-logo">Haitao Wang</a>
+            <div class="nav-links">
                 <a href="index.html">Home</a>
-                <a href="about.html">About</a>
                 <a href="blog.html">Blog</a>
                 <a href="projects.html">Projects</a>
                 <a href="forum.html">Forum</a>
-            </nav>
-        </div>
-    </header>
-    
-    <div class="container">
-        <div class="content">
-            <h1>Blog</h1>
-            <p>Exploring reinforcement learning through tutorials, implementations, and research notes.</p>
-            
-            <div class="blog-list">
-                <div class="blog-item">
-                    <h3 class="blog-title"><a href="blog/intro-to-q-learning.html">Introduction to Q-Learning</a></h3>
-                    <div class="blog-meta">January 15, 2024 • <span class="tag">q-learning</span> <span class="tag">basics</span></div>
-                    <p class="blog-excerpt">
-                        A comprehensive introduction to Q-Learning, one of the fundamental algorithms in reinforcement learning. 
-                        We'll explore the mathematical foundations and implement a simple example...
-                    </p>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<div class="container">
+    <div class="blog-header">
+        <h1 class="page-title">Blog</h1>
+        <p class="page-subtitle">Exploring reinforcement learning through tutorials, implementations, and research notes.</p>
+    </div>
+
+    <div class="blog-list">
+        <article class="blog-item" data-post-id="1">
+            <div class="blog-item-header">
+                <h2 class="blog-title"><a href="blog/intro-to-q-learning.html">Introduction to Q-Learning</a></h2>
+                <span class="blog-category">Fundamentals</span>
+            </div>
+            <div class="blog-meta">
+                <span><i class="far fa-calendar"></i> January 15, 2024</span>
+                <span><i class="far fa-clock"></i> 8 min read</span>
+                <span class="blog-tags">
+                        <span class="tag">q-learning</span>
+                        <span class="tag">basics</span>
+                    </span>
+            </div>
+            <p class="blog-excerpt">
+                A comprehensive introduction to Q-Learning, one of the fundamental algorithms in reinforcement learning.
+                We'll explore the mathematical foundations, understand the Bellman equation, and implement a simple
+                example using the OpenAI Gym environment. Perfect for beginners looking to understand value-based methods.
+            </p>
+            <div class="blog-actions">
+                <div class="blog-stats">
+                    <button class="like-btn" onclick="toggleLike(1)">
+                        <i class="far fa-heart"></i> <span class="like-count">42</span>
+                    </button>
+                    <button class="comment-btn" onclick="toggleComments(1)">
+                        <i class="far fa-comment"></i> <span class="comment-count">12</span>
+                    </button>
+                    <span class="view-count"><i class="far fa-eye"></i> 1.2k</span>
                 </div>
-                
-                <div class="blog-item">
-                    <h3 class="blog-title"><a href="#">Deep Q-Networks (DQN) Explained</a></h3>
-                    <div class="blog-meta">January 8, 2024 • <span class="tag">deep-learning</span> <span class="tag">dqn</span></div>
-                    <p class="blog-excerpt">
-                        How neural networks revolutionized Q-Learning by enabling agents to learn directly from high-dimensional 
-                        sensory inputs. We'll implement DQN from scratch...
-                    </p>
+                <a href="blog/intro-to-q-learning.html" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+            </div>
+
+            <!-- Comments Section -->
+            <div class="comments-section" id="comments-1" style="display: none;">
+                <h3>Comments</h3>
+                <div class="comment-form">
+                    <input type="text" placeholder="Your name" class="comment-name" id="comment-name-1">
+                    <textarea placeholder="Share your thoughts..." class="comment-text" id="comment-text-1"></textarea>
+                    <button class="btn-primary" onclick="addComment(1)">Post Comment</button>
                 </div>
-                
-                <div class="blog-item">
-                    <h3 class="blog-title"><a href="#">Policy Gradient Methods: REINFORCE Algorithm</a></h3>
-                    <div class="blog-meta">December 20, 2023 • <span class="tag">policy-gradient</span> <span class="tag">reinforce</span></div>
-                    <p class="blog-excerpt">
-                        Moving beyond value-based methods, we explore policy gradient algorithms that directly optimize 
-                        the policy. Starting with the REINFORCE algorithm...
-                    </p>
-                </div>
-                
-                <div class="blog-item">
-                    <h3 class="blog-title"><a href="#">Understanding Actor-Critic Methods</a></h3>
-                    <div class="blog-meta">December 5, 2023 • <span class="tag">actor-critic</span> <span class="tag">a2c</span></div>
-                    <p class="blog-excerpt">
-                        Combining the best of both worlds: policy gradients and value functions. We'll implement A2C 
-                        and understand why it's more stable than pure policy gradient methods...
-                    </p>
+                <div class="comments-list" id="comments-list-1">
+                    <div class="comment">
+                        <div class="comment-header">
+                            <strong>Sarah Chen</strong>
+                            <span class="comment-date">2 days ago</span>
+                        </div>
+                        <p>Great introduction! The step-by-step breakdown of the Bellman equation really helped me understand the concept.</p>
+                    </div>
+                    <div class="comment">
+                        <div class="comment-header">
+                            <strong>Alex Kumar</strong>
+                            <span class="comment-date">1 week ago</span>
+                        </div>
+                        <p>Would love to see a follow-up on Double Q-Learning to address the overestimation bias!</p>
+                    </div>
                 </div>
             </div>
-        </div>
+        </article>
+
+        <article class="blog-item" data-post-id="2">
+            <div class="blog-item-header">
+                <h2 class="blog-title"><a href="#">Deep Q-Networks (DQN) Explained</a></h2>
+                <span class="blog-category">Deep Learning</span>
+            </div>
+            <div class="blog-meta">
+                <span><i class="far fa-calendar"></i> January 8, 2024</span>
+                <span><i class="far fa-clock"></i> 12 min read</span>
+                <span class="blog-tags">
+                        <span class="tag">deep-learning</span>
+                        <span class="tag">dqn</span>
+                    </span>
+            </div>
+            <p class="blog-excerpt">
+                How neural networks revolutionized Q-Learning by enabling agents to learn directly from high-dimensional
+                sensory inputs. We'll implement DQN from scratch, explore experience replay and target networks,
+                and train an agent to play Atari games. Includes PyTorch implementation and performance analysis.
+            </p>
+            <div class="blog-actions">
+                <div class="blog-stats">
+                    <button class="like-btn" onclick="toggleLike(2)">
+                        <i class="far fa-heart"></i> <span class="like-count">38</span>
+                    </button>
+                    <button class="comment-btn" onclick="toggleComments(2)">
+                        <i class="far fa-comment"></i> <span class="comment-count">8</span>
+                    </button>
+                    <span class="view-count"><i class="far fa-eye"></i> 980</span>
+                </div>
+                <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+            </div>
+
+            <!-- Comments Section -->
+            <div class="comments-section" id="comments-2" style="display: none;">
+                <h3>Comments</h3>
+                <div class="comment-form">
+                    <input type="text" placeholder="Your name" class="comment-name" id="comment-name-2">
+                    <textarea placeholder="Share your thoughts..." class="comment-text" id="comment-text-2"></textarea>
+                    <button class="btn-primary" onclick="addComment(2)">Post Comment</button>
+                </div>
+                <div class="comments-list" id="comments-list-2">
+                    <div class="comment">
+                        <div class="comment-header">
+                            <strong>Michael Park</strong>
+                            <span class="comment-date">3 days ago</span>
+                        </div>
+                        <p>The visualization of the replay buffer really helped me understand why it's crucial for stability!</p>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <article class="blog-item" data-post-id="3">
+            <div class="blog-item-header">
+                <h2 class="blog-title"><a href="#">Policy Gradient Methods: REINFORCE Algorithm</a></h2>
+                <span class="blog-category">Policy Methods</span>
+            </div>
+            <div class="blog-meta">
+                <span><i class="far fa-calendar"></i> December 20, 2023</span>
+                <span><i class="far fa-clock"></i> 10 min read</span>
+                <span class="blog-tags">
+                        <span class="tag">policy-gradient</span>
+                        <span class="tag">reinforce</span>
+                    </span>
+            </div>
+            <p class="blog-excerpt">
+                Moving beyond value-based methods, we explore policy gradient algorithms that directly optimize
+                the policy. Starting with the REINFORCE algorithm, we'll derive the policy gradient theorem,
+                implement it in PyTorch, and discuss its advantages and limitations compared to value-based approaches.
+            </p>
+            <div class="blog-actions">
+                <div class="blog-stats">
+                    <button class="like-btn" onclick="toggleLike(3)">
+                        <i class="far fa-heart"></i> <span class="like-count">56</span>
+                    </button>
+                    <button class="comment-btn" onclick="toggleComments(3)">
+                        <i class="far fa-comment"></i> <span class="comment-count">15</span>
+                    </button>
+                    <span class="view-count"><i class="far fa-eye"></i> 1.5k</span>
+                </div>
+                <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+            </div>
+
+            <!-- Comments Section -->
+            <div class="comments-section" id="comments-3" style="display: none;">
+                <h3>Comments</h3>
+                <div class="comment-form">
+                    <input type="text" placeholder="Your name" class="comment-name" id="comment-name-3">
+                    <textarea placeholder="Share your thoughts..." class="comment-text" id="comment-text-3"></textarea>
+                    <button class="btn-primary" onclick="addComment(3)">Post Comment</button>
+                </div>
+                <div class="comments-list" id="comments-list-3">
+                    <div class="comment">
+                        <div class="comment-header">
+                            <strong>Emily Zhang</strong>
+                            <span class="comment-date">1 week ago</span>
+                        </div>
+                        <p>Finally understood why we need baselines! The variance reduction section was particularly helpful.</p>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <article class="blog-item" data-post-id="4">
+            <div class="blog-item-header">
+                <h2 class="blog-title"><a href="#">Understanding Actor-Critic Methods</a></h2>
+                <span class="blog-category">Advanced</span>
+            </div>
+            <div class="blog-meta">
+                <span><i class="far fa-calendar"></i> December 5, 2023</span>
+                <span><i class="far fa-clock"></i> 15 min read</span>
+                <span class="blog-tags">
+                        <span class="tag">actor-critic</span>
+                        <span class="tag">a2c</span>
+                    </span>
+            </div>
+            <p class="blog-excerpt">
+                Combining the best of both worlds: policy gradients and value functions. We'll implement A2C
+                (Advantage Actor-Critic) and understand why it's more stable than pure policy gradient methods.
+                Includes comparisons with other algorithms and practical tips for hyperparameter tuning.
+            </p>
+            <div class="blog-actions">
+                <div class="blog-stats">
+                    <button class="like-btn" onclick="toggleLike(4)">
+                        <i class="far fa-heart"></i> <span class="like-count">62</span>
+                    </button>
+                    <button class="comment-btn" onclick="toggleComments(4)">
+                        <i class="far fa-comment"></i> <span class="comment-count">18</span>
+                    </button>
+                    <span class="view-count"><i class="far fa-eye"></i> 2.1k</span>
+                </div>
+                <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+            </div>
+
+            <!-- Comments Section -->
+            <div class="comments-section" id="comments-4" style="display: none;">
+                <h3>Comments</h3>
+                <div class="comment-form">
+                    <input type="text" placeholder="Your name" class="comment-name" id="comment-name-4">
+                    <textarea placeholder="Share your thoughts..." class="comment-text" id="comment-text-4"></textarea>
+                    <button class="btn-primary" onclick="addComment(4)">Post Comment</button>
+                </div>
+                <div class="comments-list" id="comments-list-4">
+                    <div class="comment">
+                        <div class="comment-header">
+                            <strong>David Liu</strong>
+                            <span class="comment-date">4 days ago</span>
+                        </div>
+                        <p>The comparison table between different actor-critic variants was super useful. Looking forward to the PPO post!</p>
+                    </div>
+                </div>
+            </div>
+        </article>
     </div>
-    
-    <script src="js/main.js"></script>
+</div>
+
+<footer>
+    <div class="container">
+        <p>&copy; 2024 Haitao Wang. Built with passion for RL.</p>
+    </div>
+</footer>
+
+<script src="js/main.js"></script>
 </body>
 </html>

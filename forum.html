@@ -3,59 +3,296 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Forum - Your Name</title>
+    <title>Forum - Haitao Wang</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .forum-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 60px 0 40px;
+        }
+
+        .forum-stats {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: var(--gradient-primary);
+            border-radius: 20px;
+            color: white;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .forum-post {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .forum-post:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .forum-post h3 {
+            margin-bottom: 10px;
+            color: var(--text-dark);
+            font-size: 1.4rem;
+        }
+
+        .post-meta {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 15px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .post-tags {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .forum-tag {
+            padding: 5px 12px;
+            background: var(--light-bg);
+            border-radius: 15px;
+            font-size: 0.85rem;
+            color: var(--primary-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .answers {
+            margin-top: 25px;
+        }
+
+        .answers h4 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .answer {
+            background: var(--light-bg);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+        }
+
+        .answer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .answer-author {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .answer-date {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 40px;
+            width: 90%;
+            max-width: 700px;
+            border-radius: 20px;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            font-size: 30px;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: var(--text-dark);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .answer-form {
+            margin-top: 20px;
+            padding: 25px;
+            background: var(--light-bg);
+            border-radius: 15px;
+            border: 2px solid var(--border-color);
+        }
+
+        .btn-secondary {
+            background: var(--light-bg);
+            color: var(--primary-color);
+            padding: 10px 20px;
+            border: 2px solid var(--primary-color);
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            margin-right: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <nav>
+<header>
+    <div class="container">
+        <nav>
+            <a href="index.html" class="nav-logo">Haitao Wang</a>
+            <div class="nav-links">
                 <a href="index.html">Home</a>
-                <a href="about.html">About</a>
                 <a href="blog.html">Blog</a>
                 <a href="projects.html">Projects</a>
                 <a href="forum.html">Forum</a>
-            </nav>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<div class="container">
+    <div class="forum-header">
+        <div>
+            <h1 class="page-title">Community Forum</h1>
+            <p class="page-subtitle">Discuss reinforcement learning concepts, share ideas, and get help from the community.</p>
         </div>
-    </header>
-    
+        <button class="btn-primary" onclick="openNewQuestionModal()">
+            <i class="fas fa-plus"></i> Ask a Question
+        </button>
+    </div>
+
+    <div class="forum-stats">
+        <div class="stat-item">
+            <span class="stat-number">247</span>
+            <span class="stat-label">Total Questions</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-number">892</span>
+            <span class="stat-label">Answers</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-number">156</span>
+            <span class="stat-label">Active Members</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-number">98%</span>
+            <span class="stat-label">Questions Answered</span>
+        </div>
+    </div>
+
+    <div id="forum-posts">
+        <!-- Forum posts will be loaded here by JavaScript -->
+    </div>
+</div>
+
+<!-- Modal for new question -->
+<div id="questionModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Ask a Question</h2>
+        <p style="color: var(--text-light); margin-bottom: 30px;">Get help from the reinforcement learning community</p>
+        <form onsubmit="submitQuestion(event)">
+            <div class="form-group">
+                <label for="questionTitle">Question Title</label>
+                <input type="text" id="questionTitle" placeholder="What's your question about?" required>
+            </div>
+            <div class="form-group">
+                <label for="questionAuthor">Your Name</label>
+                <input type="text" id="questionAuthor" placeholder="How should we address you?" required>
+            </div>
+            <div class="form-group">
+                <label for="questionContent">Question Details</label>
+                <textarea id="questionContent" placeholder="Provide more context about your question..." required></textarea>
+            </div>
+            <button type="submit" class="btn-primary">Post Question</button>
+        </form>
+    </div>
+</div>
+
+<footer>
     <div class="container">
-        <div class="content">
-            <div class="forum-header">
-                <h1>Community Forum</h1>
-                <button class="btn-primary" onclick="openNewQuestionModal()">Ask a Question</button>
-            </div>
-            <p>Discuss reinforcement learning concepts, share ideas, and get help from the community.</p>
-            
-            <div id="forum-posts">
-                <!-- Forum posts will be loaded here by JavaScript -->
-            </div>
-        </div>
+        <p>&copy; 2024 Haitao Wang. Built with passion for RL.</p>
     </div>
-    
-    <!-- Modal for new question -->
-    <div id="questionModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h2>Ask a Question</h2>
-            <form onsubmit="submitQuestion(event)">
-                <div class="form-group">
-                    <label for="questionTitle">Title</label>
-                    <input type="text" id="questionTitle" required>
-                </div>
-                <div class="form-group">
-                    <label for="questionAuthor">Your Name</label>
-                    <input type="text" id="questionAuthor" required>
-                </div>
-                <div class="form-group">
-                    <label for="questionContent">Question</label>
-                    <textarea id="questionContent" required></textarea>
-                </div>
-                <button type="submit" class="btn-primary">Post Question</button>
-            </form>
-        </div>
-    </div>
-    
-    <script src="js/main.js"></script>
+</footer>
+
+<script src="js/main.js"></script>
 </body>
 </html>
