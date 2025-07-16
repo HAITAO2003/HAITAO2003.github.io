@@ -13,99 +13,75 @@
         }
 
         .resources-section {
-            margin: 60px 0;
-        }
-
-        .resources-section h2 {
-            font-size: 2rem;
-            margin-bottom: 30px;
-            color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .resources-section h2::before {
-            content: '';
-            width: 4px;
-            height: 40px;
-            background: var(--accent-color);
-            border-radius: 2px;
+            margin-bottom: 60px;
         }
 
         .resources-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px;
+            gap: 30px;
+            margin-bottom: 40px;
         }
 
         .resource-card {
             background: var(--card-bg);
             padding: 30px;
-            border-radius: 15px;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            box-shadow: var(--shadow-md);
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .resource-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: var(--gradient-primary);
+            border: 1px solid var(--border-color);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
         .resource-card:hover {
             transform: translateY(-5px);
-            box-shadow: var(--shadow-md);
+            box-shadow: var(--shadow-lg);
             border-color: var(--accent-color);
         }
 
-        .resource-card h3 {
-            margin-bottom: 10px;
-            color: var(--text-dark);
+        .resource-title {
             font-size: 1.3rem;
+            color: var(--text-dark);
+            margin-bottom: 10px;
         }
 
-        .resource-card p {
+        .resource-author {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .resource-description {
             color: var(--text-light);
             line-height: 1.6;
             margin-bottom: 20px;
-        }
-
-        .resource-card .author {
-            font-weight: 600;
-            color: var(--primary-color);
-            margin-bottom: 15px;
+            flex-grow: 1;
         }
 
         .resource-link {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            color: var(--accent-color);
+            gap: 5px;
+            color: var(--primary-color);
             text-decoration: none;
             font-weight: 500;
-            transition: all 0.3s ease;
-            padding: 8px 16px;
-            border-radius: 20px;
-            background: var(--light-bg);
-            border: 1px solid var(--border-color);
+            transition: gap 0.3s ease;
         }
 
         .resource-link:hover {
-            background: var(--accent-color);
-            color: white;
-            border-color: var(--accent-color);
-            gap: 12px;
+            gap: 10px;
         }
 
-        .category-icon {
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .section-icon {
             width: 50px;
             height: 50px;
             background: var(--light-bg);
@@ -115,14 +91,18 @@
             justify-content: center;
             font-size: 1.5rem;
             color: var(--accent-color);
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
         }
 
-        .resource-card:hover .category-icon {
-            background: var(--accent-color);
-            color: white;
-            transform: scale(1.1);
+        .section-header h2 {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .resources-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -145,110 +125,243 @@
 <div class="container">
     <div class="resources-header">
         <h1 class="page-title">AI & RL Resources</h1>
-        <p class="page-subtitle">Essential resources for learning artificial intelligence and reinforcement learning.</p>
+        <p class="page-subtitle">Essential resources for learning artificial intelligence and reinforcement learning</p>
     </div>
 
+    <!-- Books Section -->
     <section class="resources-section">
-        <h2><i class="fas fa-book"></i> Books</h2>
+        <div class="section-header">
+            <div class="section-icon">
+                <i class="fas fa-book"></i>
+            </div>
+            <h2>Books</h2>
+        </div>
         <div class="resources-grid">
             <div class="resource-card">
-                <div class="category-icon"><i class="fas fa-book-open"></i></div>
-                <h3>Reinforcement Learning: An Introduction</h3>
-                <div class="author">Sutton & Barto</div>
-                <p>The definitive RL textbook covering fundamental concepts, algorithms, and mathematical foundations. Essential reading for anyone serious about understanding reinforcement learning.</p>
+                <h3 class="resource-title">Reinforcement Learning: An Introduction</h3>
+                <p class="resource-author">Sutton & Barto</p>
+                <p class="resource-description">
+                    The definitive textbook on reinforcement learning. Covers fundamental concepts from
+                    tabular methods to function approximation with clarity and depth.
+                </p>
                 <a href="http://incompleteideas.net/book/the-book-2nd.html" target="_blank" class="resource-link">
-                    <i class="fas fa-external-link-alt"></i> Free online
+                    Read Online <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
 
             <div class="resource-card">
-                <div class="category-icon"><i class="fas fa-brain"></i></div>
-                <h3>Deep Learning</h3>
-                <div class="author">Goodfellow, Bengio & Courville</div>
-                <p>Comprehensive introduction to deep learning methods that are essential for modern RL. Covers neural networks, optimization, and advanced architectures.</p>
+                <h3 class="resource-title">Deep Learning</h3>
+                <p class="resource-author">Goodfellow, Bengio & Courville</p>
+                <p class="resource-description">
+                    Essential foundation for modern RL. Comprehensive coverage of neural networks,
+                    optimization, and deep learning architectures.
+                </p>
                 <a href="https://www.deeplearningbook.org/" target="_blank" class="resource-link">
-                    <i class="fas fa-external-link-alt"></i> Free online
+                    Read Online <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="resource-card">
+                <h3 class="resource-title">Pattern Recognition and Machine Learning</h3>
+                <p class="resource-author">Christopher Bishop</p>
+                <p class="resource-description">
+                    Excellent treatment of probabilistic approaches to machine learning. Particularly
+                    strong on Bayesian methods and graphical models.
+                </p>
+                <a href="https://www.microsoft.com/en-us/research/people/cmbishop/prml-book/" target="_blank" class="resource-link">
+                    Learn More <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
         </div>
     </section>
 
+    <!-- Courses Section -->
     <section class="resources-section">
-        <h2><i class="fas fa-graduation-cap"></i> Courses</h2>
+        <div class="section-header">
+            <div class="section-icon">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <h2>Courses</h2>
+        </div>
         <div class="resources-grid">
             <div class="resource-card">
-                <div class="category-icon"><i class="fas fa-university"></i></div>
-                <h3>CS285: Deep Reinforcement Learning (Berkeley)</h3>
-                <div class="author">Sergey Levine</div>
-                <p>Graduate-level deep RL course covering policy gradients, Q-learning, model-based RL, and advanced topics. Includes lectures, assignments, and projects.</p>
+                <h3 class="resource-title">CS285: Deep Reinforcement Learning</h3>
+                <p class="resource-author">UC Berkeley - Sergey Levine</p>
+                <p class="resource-description">
+                    Graduate-level course covering modern deep RL algorithms. Includes lectures on
+                    policy gradients, Q-learning, model-based RL, and exploration.
+                </p>
                 <a href="http://rail.eecs.berkeley.edu/deeprlcourse/" target="_blank" class="resource-link">
-                    <i class="fas fa-external-link-alt"></i> Course website
+                    Course Website <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
 
             <div class="resource-card">
-                <div class="category-icon"><i class="fas fa-rocket"></i></div>
-                <h3>OpenAI Spinning Up</h3>
-                <div class="author">OpenAI</div>
-                <p>Educational resource with key deep RL algorithm implementations, clear explanations, and practical coding exercises to get you started.</p>
+                <h3 class="resource-title">OpenAI Spinning Up</h3>
+                <p class="resource-author">OpenAI</p>
+                <p class="resource-description">
+                    Educational resource with implementations of key deep RL algorithms. Excellent
+                    introduction with clear explanations and working code.
+                </p>
                 <a href="https://spinningup.openai.com/" target="_blank" class="resource-link">
-                    <i class="fas fa-external-link-alt"></i> Spinning Up
+                    Visit Spinning Up <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="resource-card">
+                <h3 class="resource-title">CS234: Reinforcement Learning</h3>
+                <p class="resource-author">Stanford - Emma Brunskill</p>
+                <p class="resource-description">
+                    Comprehensive introduction to RL theory and practice. Covers bandits, MDPs,
+                    function approximation, and policy search methods.
+                </p>
+                <a href="https://web.stanford.edu/class/cs234/" target="_blank" class="resource-link">
+                    Course Website <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
         </div>
     </section>
 
+    <!-- Papers Section -->
     <section class="resources-section">
-        <h2><i class="fas fa-file-alt"></i> Key Papers</h2>
+        <div class="section-header">
+            <div class="section-icon">
+                <i class="fas fa-file-alt"></i>
+            </div>
+            <h2>Key Papers</h2>
+        </div>
         <div class="resources-grid">
             <div class="resource-card">
-                <div class="category-icon"><i class="fas fa-gamepad"></i></div>
-                <h3>Playing Atari with Deep Reinforcement Learning</h3>
-                <div class="author">Mnih et al. (2013)</div>
-                <p>The DQN paper that started deep RL by showing how neural networks can learn to play Atari games directly from pixels.</p>
+                <h3 class="resource-title">Playing Atari with Deep Reinforcement Learning</h3>
+                <p class="resource-author">Mnih et al. (2013)</p>
+                <p class="resource-description">
+                    The DQN paper that started the deep RL revolution. Demonstrated learning to play
+                    Atari games directly from pixels using neural networks.
+                </p>
                 <a href="https://arxiv.org/abs/1312.5602" target="_blank" class="resource-link">
-                    <i class="fas fa-external-link-alt"></i> arXiv
+                    Read on arXiv <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
 
             <div class="resource-card">
-                <div class="category-icon"><i class="fas fa-chart-line"></i></div>
-                <h3>Proximal Policy Optimization Algorithms</h3>
-                <div class="author">Schulman et al. (2017)</div>
-                <p>PPO, a standard policy gradient method that balances sample efficiency with implementation simplicity and stability.</p>
+                <h3 class="resource-title">Proximal Policy Optimization Algorithms</h3>
+                <p class="resource-author">Schulman et al. (2017)</p>
+                <p class="resource-description">
+                    PPO has become the default policy gradient method due to its simplicity and
+                    effectiveness. Essential reading for modern RL practitioners.
+                </p>
                 <a href="https://arxiv.org/abs/1707.06347" target="_blank" class="resource-link">
-                    <i class="fas fa-external-link-alt"></i> arXiv
+                    Read on arXiv <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="resource-card">
+                <h3 class="resource-title">Soft Actor-Critic</h3>
+                <p class="resource-author">Haarnoja et al. (2018)</p>
+                <p class="resource-description">
+                    State-of-the-art off-policy algorithm for continuous control. Combines maximum
+                    entropy RL with actor-critic methods for stable learning.
+                </p>
+                <a href="https://arxiv.org/abs/1801.01290" target="_blank" class="resource-link">
+                    Read on arXiv <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
         </div>
     </section>
 
+    <!-- Tools Section -->
     <section class="resources-section">
-        <h2><i class="fas fa-tools"></i> Tools & Libraries</h2>
+        <div class="section-header">
+            <div class="section-icon">
+                <i class="fas fa-tools"></i>
+            </div>
+            <h2>Tools & Libraries</h2>
+        </div>
         <div class="resources-grid">
             <div class="resource-card">
-                <div class="category-icon"><i class="fas fa-cogs"></i></div>
-                <h3>Stable Baselines3</h3>
-                <div class="author">PyTorch Implementation</div>
-                <p>Reliable RL algorithm implementations with consistent APIs, extensive documentation, and built-in tensorboard integration.</p>
+                <h3 class="resource-title">Stable Baselines3</h3>
+                <p class="resource-author">DLR-RM</p>
+                <p class="resource-description">
+                    Reliable implementations of RL algorithms in PyTorch. Well-documented, tested,
+                    and actively maintained. Perfect for research and applications.
+                </p>
                 <a href="https://stable-baselines3.readthedocs.io/" target="_blank" class="resource-link">
-                    <i class="fas fa-external-link-alt"></i> Documentation
+                    Documentation <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
 
             <div class="resource-card">
-                <div class="category-icon"><i class="fas fa-play"></i></div>
-                <h3>OpenAI Gym</h3>
-                <div class="author">OpenAI</div>
-                <p>Standard toolkit for RL environments providing a unified interface for training and testing RL algorithms across diverse domains.</p>
-                <a href="https://gym.openai.com/" target="_blank" class="resource-link">
-                    <i class="fas fa-external-link-alt"></i> Website
+                <h3 class="resource-title">Gymnasium</h3>
+                <p class="resource-author">Farama Foundation</p>
+                <p class="resource-description">
+                    The maintained fork of OpenAI Gym. Standard toolkit for developing and comparing
+                    reinforcement learning algorithms with diverse environments.
+                </p>
+                <a href="https://gymnasium.farama.org/" target="_blank" class="resource-link">
+                    Documentation <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="resource-card">
+                <h3 class="resource-title">Ray RLlib</h3>
+                <p class="resource-author">Anyscale</p>
+                <p class="resource-description">
+                    Scalable RL library with distributed training support. Includes implementations
+                    of many algorithms and supports custom environments.
+                </p>
+                <a href="https://docs.ray.io/en/latest/rllib/index.html" target="_blank" class="resource-link">
+                    Documentation <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
         </div>
     </section>
 
+    <!-- Communities Section -->
+    <section class="resources-section">
+        <div class="section-header">
+            <div class="section-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <h2>Communities</h2>
+        </div>
+        <div class="resources-grid">
+            <div class="resource-card">
+                <h3 class="resource-title">r/MachineLearning</h3>
+                <p class="resource-author">Reddit Community</p>
+                <p class="resource-description">
+                    Active community for ML/RL discussions. Great for staying updated on latest
+                    research, asking questions, and sharing projects.
+                </p>
+                <a href="https://www.reddit.com/r/MachineLearning/" target="_blank" class="resource-link">
+                    Visit Community <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
 
+            <div class="resource-card">
+                <h3 class="resource-title">RL Discord</h3>
+                <p class="resource-author">Reinforcement Learning Community</p>
+                <p class="resource-description">
+                    Discord server dedicated to RL discussions. Active channels for beginners,
+                    research papers, and implementation help.
+                </p>
+                <a href="https://discord.gg/reinforcement-learning" target="_blank" class="resource-link">
+                    Join Discord <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="resource-card">
+                <h3 class="resource-title">AI Alignment Forum</h3>
+                <p class="resource-author">AI Safety Community</p>
+                <p class="resource-description">
+                    Forum focused on AI alignment and safety research. Important discussions on
+                    long-term impacts and responsible development of RL systems.
+                </p>
+                <a href="https://www.alignmentforum.org/" target="_blank" class="resource-link">
+                    Visit Forum <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
 </div>
 
 <footer>
