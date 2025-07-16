@@ -53,13 +53,15 @@ function initializeBlogData() {
                 1: { count: 42, liked: false },
                 2: { count: 38, liked: false },
                 3: { count: 56, liked: false },
-                4: { count: 62, liked: false }
+                4: { count: 62, liked: false },
+                5: { count: 28, liked: false }  // Add this line
             },
             views: {
                 1: 1234,
                 2: 980,
                 3: 1567,
-                4: 2145
+                4: 2145,
+                5: 247  // Add this line
             },
             comments: {
                 1: [
@@ -74,6 +76,10 @@ function initializeBlogData() {
                 ],
                 4: [
                     { name: "David Liu", date: "4 days ago", text: "The comparison table between different actor-critic variants was super useful. Looking forward to the PPO post!" }
+                ],
+                5: [  // Add this section
+                    { name: "Dr. Elena Rodriguez", date: "2 hours ago", text: "Excellent mathematical exposition! The car racing example really helps bridge the gap between theory and practice. Looking forward to the next chapter on analytical solutions." },
+                    { name: "James Park", date: "1 day ago", text: "The belief state update equations in the POMDP section are beautifully explained. This is exactly what I needed to understand how partial observability is handled mathematically." }
                 ]
             }
         };

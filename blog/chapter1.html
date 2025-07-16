@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markov Decision Processes and Partially Observable Markov Decision Processes - Haitao Wang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .blog-post-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .blog-post-content h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .blog-post-content h2 {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+
+        .blog-post-content h3 {
+            font-size: 1.4rem;
+            color: var(--text-dark);
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        .blog-post-content p {
+            margin-bottom: 20px;
+            line-height: 1.8;
+            color: var(--text-dark);
+        }
+
+        .blog-post-content ul {
+            margin: 20px 0;
+            padding-left: 30px;
+        }
+
+        .blog-post-content li {
+            margin-bottom: 10px;
+            line-height: 1.8;
+        }
+
+        .blog-figure {
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .blog-figure img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .blog-figure figcaption {
+            margin-top: 10px;
+            font-style: italic;
+            color: var(--text-light);
+        }
+
+        .example-box {
+            background: var(--light-bg);
+            border-left: 4px solid var(--accent-color);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .example-box h4 {
+            color: var(--accent-color);
+            margin-bottom: 15px;
+        }
+
+        .math-block {
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: 40px;
+            transition: gap 0.3s ease;
+        }
+
+        .back-link:hover {
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="container">
+        <nav>
+            <a href="../index.html" class="nav-logo">Haitao Wang</a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="../blog.html">Blog</a>
+                <a href="../projects.html">Projects</a>
+                <a href="../resources.html">Resources</a>
+                <a href="../forum.html">Forum</a>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<div class="container">
+    <article class="blog-post-content" data-post-id="5">
+        <h1>Chapter 1: Markov Decision Processes and Partially Observable Markov Decision Processes</h1>
+
+        <div class="blog-meta">
+            <span><i class="far fa-calendar"></i> January 20, 2024</span>
+            <span><i class="far fa-clock"></i> 15 min read</span>
+            <span class="tag">mdp</span>
+            <span class="tag">pomdp</span>
+            <span class="tag">theory</span>
+        </div>
+
+        <h2>1. Introduction and Motivation</h2>
+
+        <p>
+            Reinforcement learning (RL) has emerged as one of the most compelling paradigms in artificial intelligence,
+            with applications spanning from RL agents that surpass human expertise in complicated games such as Go,
+            Dota 2 and StarCraft, to excelling in real life applications such as autonomous driving and robotics.
+        </p>
+
+        <figure class="blog-figure">
+            <img src="../src/rl-robotics-gymnastics.gif" alt="RL agents performing robotic gymnastics">
+            <figcaption>RL agents mastering complex robotic gymnastics tasks</figcaption>
+        </figure>
+
+        <p>
+            Today, in the first blog post of this RL foundation series, we will explore the theoretical foundation
+            underlying these remarkable achievements which rests primarily on two mathematical frameworks:
+            Markov Decision Processes (MDPs) and Partially Observable Markov Decision Processes (POMDPs).
+        </p>
+
+        <p>
+            Understanding these frameworks is essential for anyone seeking to apply reinforcement learning effectively.
+            The mathematical rigor of MDPs and POMDPs provides the theoretical foundation necessary to design algorithms,
+            prove convergence guarantees, and understand fundamental limitations. Moreover, the conceptual clarity gained
+            from studying these frameworks enables RL practitioners to identify which real-world problems are amenable
+            to RL solutions and how to formulate them appropriately.
+        </p>
+
+        <p>
+            The motivation for studying these frameworks stems from their mathematical elegance that captures the
+            essential structure of sequential decision-making problems while remaining computationally tractable.
+            Consider an autonomous driving system navigating through traffic, a robotic arm performing precision
+            manufacturing tasks, or a trading algorithm making sequential investment decisions. Each of these scenarios
+            involves an agent that must make decisions sequentially over time, where each decision influences future
+            states and potential rewards. How MDP and POMDP capture this problem structure and dynamics will be
+            explored more in detail in the following sections.
+        </p>
+
+        <h2>2. Markov Decision Processes</h2>
+
+        <h3>2.1 Formal Definition</h3>
+
+        <p>
+            A Markov Decision Process is formally defined as a tuple $(S, A, T, R, \gamma, H)$, where each component
+            captures a fundamental aspect of the sequential decision-making problem:
+        </p>
+
+        <ul>
+            <li>$S$ represents the state space, encompassing all possible environment states that the agent might encounter</li>
+            <li>$A$ denotes the action space, containing all decisions/actions the agent can make</li>
+            <li>$T : S \times A \times S \rightarrow [0, 1]$ is the transition function, where $T(s, a, s')$ specifies
+                the probability of transitioning from state $s$ to state $s'$ when taking action $a$</li>
+            <li>$R : S \times A \times S \rightarrow \mathbb{R}$ defines the reward function, providing immediate
+                feedback for state-action-state transitions</li>
+            <li>$\gamma \in [0, 1]$ is the discount factor, determining the relative importance of immediate versus
+                future rewards</li>
+            <li>$H$ represents the horizon, which may be finite or infinite depending on the problem structure</li>
+        </ul>
+
+        <figure class="blog-figure">
+            <img src="../src/mdp.png" alt="MDP diagram showing agent-environment interaction">
+            <figcaption>Figure 1: Agent-environment interaction in an MDP</figcaption>
+        </figure>
+
+        <div class="example-box">
+            <h4>Car Racing MDP Example</h4>
+
+            <p>Consider a reinforcement learning (RL) agent learning to play a car racing game. The environment
+                can be formulated as a Markov Decision Process (MDP) with the following components:</p>
+
+            <ul>
+                <li><strong>State Space (S):</strong> Includes the car's position $(x, y)$ on the track, velocity $(v_x, v_y)$,
+                    steering angle $\theta$, and the distance to the track boundaries.</li>
+
+                <li><strong>Action Space (A):</strong>
+                    $$A = \{\text{accelerate, brake, steer left, steer right, maintain speed}\}$$</li>
+
+                <li><strong>Transition Function (T):</strong> Defines the dynamic and physics model of the world.
+                    For example, if the car accelerates on a straight segment of the track, in a stochastic environment,
+                    $T$ assigns a high probability to an increase in forward velocity, but also allows for small
+                    variations in position due to tire slip or engine noise.</li>
+
+                <li><strong>Reward Function (R):</strong>
+                    <ul style="list-style-type: none; padding-left: 20px;">
+                        <li>+10 for crossing checkpoints</li>
+                        <li>−100 for crashing</li>
+                        <li>+1 for maintaining high speed</li>
+                        <li>−5 for going off-track</li>
+                    </ul>
+                </li>
+
+                <li><strong>Discount Factor (γ):</strong> $\gamma = 0.95$. This balances immediate rewards
+                    (e.g. maintaining speed) with long-term outcomes (e.g. completing the race), encouraging
+                    the agent to slow down for corners to avoid future crashes.</li>
+
+                <li><strong>Horizon (H):</strong> Each race episode lasts for a maximum of 300 time steps,
+                    or until the car finishes the race or crashes. This defines a finite horizon MDP.</li>
+            </ul>
+        </div>
+
+        <p>
+            This MDP formulation enables the agent to learn optimal racing strategies by balancing short-term
+            speed rewards with long-term objectives like race completion and avoiding crashes through
+            trial-and-error interaction with the environment.
+        </p>
+
+        <h3>2.2 Optimization Objective</h3>
+
+        <p>
+            The fundamental goal in any MDP is to find an optimal policy $\pi^*$ that maximizes expected
+            cumulative reward. Mathematically, this objective is expressed as:
+        </p>
+
+        <div class="math-block">
+            $$\pi^* = \arg\max_{\pi} \mathbb{E}\left[\sum_{t=0}^{H} \gamma^t R(s_t, a_t, s_{t+1}) \mid \pi\right]$$
+        </div>
+
+        <p>
+            To understand this mathematical formulation in intuitive terms, consider that we seek a
+            decision-making strategy (policy) parameterized by $\pi$ that maximizes the total expected
+            reward over the finite time horizon. The summation captures the cumulative nature of the
+            reward in the decision making process, while the discount factor $\gamma$ ensures immediate
+            rewards are weighted more heavily than distant future rewards.
+        </p>
+
+        <h3>2.3 Technical Considerations and Limitations</h3>
+
+        <p>
+            Several technical aspects of the MDP formulation warrant careful consideration. The reward
+            function may alternatively be defined as $R(s_t, a_t)$, depending on the specific application
+            context. This alternative formulation is particularly common in imitation learning scenarios,
+            where rewards depend on state-action pairs rather than complete transitions.
+        </p>
+
+        <p>
+            <strong>The Markov assumption:</strong> this assumption states that the probability distribution
+            over next states depends only on the current state and action, not on the entire history of
+            previous states and actions. Formally:
+        </p>
+
+        <div class="math-block">
+            $$P(s_{t+1}|s_t, a_t, s_{t-1}, a_{t-1}, \ldots, s_0, a_0) = P(s_{t+1}|s_t, a_t)$$
+        </div>
+
+        <p>
+            While this assumption enables computational tractability and a well defined decision process,
+            it may not hold in many real life scenarios where recent historical transitions or states are
+            also important or when the environment is not fully observable.
+        </p>
+
+        <p>
+            These constraints naturally motivate the transition to more sophisticated frameworks, particularly
+            when dealing with partially observable environments where agents must make decisions based on
+            incomplete information.
+        </p>
+
+        <h2>3. Partially Observable Markov Decision Processes</h2>
+
+        <h3>3.1 Motivation and Application Context</h3>
+
+        <p>
+            Partially Observable Markov Decision Processes extend the MDP framework to address the fundamental
+            limitation of assuming complete state observability. In most real-world scenarios, agents operate
+            with incomplete information about their environment. A robot navigating an unknown building cannot
+            simultaneously observe all rooms, an autonomous vehicle has limited sensor range, and a trading
+            algorithm cannot access all market information simultaneously. However, the stochastic domain
+            introduces additional complexity, as observations themselves may be noisy or unreliable, further
+            complicating the decision-making process.
+        </p>
+
+        <h3>3.2 Formal Definition</h3>
+
+        <figure class="blog-figure">
+            <img src="../src/mdp.png" alt="POMDP diagram showing agent with belief state">
+            <figcaption>Figure 2: POMDP structure with state estimator and belief state</figcaption>
+        </figure>
+
+        <p>
+            A Partially Observable Markov Decision Process is defined as the tuple $(S, A, T, R, \Omega, O)$,
+            where the first four components $(S, A, T, R)$ retain the same definitions as in standard MDPs.
+            The additional components capture the partial observability structure:
+        </p>
+
+        <ul>
+            <li>$\Omega$ represents a finite set of observations that the agent can observe</li>
+            <li>$O : S \times A \rightarrow \pi(\Omega)$ defines the observation function, analogous to
+                emission probabilities in Hidden Markov Models, where $O(s, a, o)$ specifies the probability
+                of observing $o$ after taking action $a$ in state $s$</li>
+        </ul>
+
+        <p>
+            <strong>Note:</strong> it is important to distinguish $S$ from $\Omega$. The state represents
+            the true state of the world, whereas observations represent the partially observable information
+            of the actual state.
+        </p>
+
+        <h3>3.3 Problem Structure and Key Concepts</h3>
+
+        <p>
+            We decompose the problem of controlling a POMDP into two parts, as shown in the figure above.
+            The agent makes observations and generates actions. It keeps an internal belief state, $b$, that
+            summarizes its previous experience. The component labeled SE is the state estimator: it is
+            responsible for updating the belief state based on the last action, the current observation,
+            and the previous belief state. The policy $\pi$ is a function of the agent's belief state
+            rather than the state of the world.
+        </p>
+
+        <p>
+            Formally, as stated in the original POMDP paper, the belief states will be the agent's subjective
+            probability distributions over the actual states of the world. It provides a basis for acting
+            under uncertainty. Furthermore, they comprise a sufficient statistic for the past history and
+            initial belief state of the agent: given the agent's current belief state (properly computed),
+            no additional data about its past actions or observations would supply any further information
+            about the current state of the world. This means that the process over belief states is
+            technically Markov.
+        </p>
+
+        <p>
+            To compute belief state $b$, a probability distribution over $S$. We let $b(s)$ denote the
+            probability assigned to world state $s$ by belief state $b$. The axioms of probability require
+            that $0 \leq b(s) \leq 1$ for all $s \in S$ and that $\sum_{s \in S} b(s) = 1$. The state
+            estimator must compute a new belief state, $b'$, given an old belief state $b$, an action $a$,
+            and an observation $o$. The new degree of belief in some state $s'$, $b'(s')$, can be obtained
+            from basic probability theory as follows:
+        </p>
+
+        <div class="math-block">
+            $$\begin{align}
+            b'(s') &= \Pr(s'|o, a, b) \\
+            &= \frac{\Pr(o|s', a, b) \Pr(s'|a, b)}{\Pr(o|a, b)} \\
+            &= \frac{\Pr(o|s', a) \sum_{s \in S} \Pr(s'|a, b, s) \Pr(s|a, b)}{\Pr(o|a, b)} \\
+            &= \frac{O(s', a, o) \sum_{s \in S} T(s, a, s')b(s)}{\Pr(o|a, b)}
+            \end{align}$$
+        </div>
+
+        <p>
+            The denominator, $\Pr(o|a, b)$, can be treated as a normalizing factor, independent of $s'$,
+            that causes $b'$ to sum to 1. The state-estimation function $SE(b, a, o)$ has as its output
+            the new belief state $b'$.
+        </p>
+
+        <p>
+            Thus, the state-estimation component of a POMDP controller can be constructed quite simply
+            from a given model.
+        </p>
+
+        <h2>4. Conclusion</h2>
+
+        <p>
+            This introductory exploration of Markov Decision Processes and Partially Observable Markov
+            Decision Processes establishes the theoretical foundation for understanding sequential
+            decision-making under uncertainty.
+        </p>
+
+        <p>
+            The algorithms that will be introduced in the remaining chapters of the blog series all assume
+            MDP environment. The reason being many problems that are fundamentally partially observable can
+            still be effectively addressed using MDP algorithms, albeit sometimes with degraded performance
+            compared to methods that explicitly account for partial observability. Many foundational RL
+            algorithms were designed for MDP environment. However, many modern state-of-the-art model-based
+            RL algorithms such as Dreamer series and TD-MPC2 that have achieved SOTA performance in complex
+            continuous control tasks all assume POMDP environment.
+        </p>
+
+        <p>
+            The theoretical frameworks presented here provide the conceptual foundation necessary for
+            understanding advanced reinforcement learning algorithms, their assumptions, and their limitations.
+            As we progress through subsequent topics in this series. In the next chapter, we will work through
+            some exact analytical solutions in solving MDP problems.
+        </p>
+
+        <!-- Post actions bar -->
+        <div class="post-actions-bar">
+            <button class="like-btn" onclick="toggleLike(5)">
+                <i class="far fa-heart"></i> <span class="like-count">0</span>
+            </button>
+            <button class="comment-btn" onclick="toggleComments(5)">
+                <i class="far fa-comment"></i> <span class="comment-count">0</span>
+            </button>
+            <span class="view-count"><i class="far fa-eye"></i> <span id="view-count-5">0</span></span>
+            <button class="share-btn" onclick="sharePost()">
+                <i class="fas fa-share"></i> Share
+            </button>
+        </div>
+
+        <!-- Comments Section -->
+        <div class="comments-section post-comment-section" id="comments-5">
+            <h3>Comments</h3>
+            <div class="comment-form">
+                <input type="text" placeholder="Your name" class="comment-name" id="comment-name-5">
+                <textarea placeholder="Share your thoughts..." class="comment-text" id="comment-text-5"></textarea>
+                <button class="btn-primary" onclick="addComment(5)">Post Comment</button>
+            </div>
+            <div class="comments-list" id="comments-list-5">
+                <!-- Comments will be loaded here -->
+            </div>
+        </div>
+
+        <a href="../blog.html" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Blog
+        </a>
+    </article>
+</div>
+
+<footer>
+    <div class="container">
+        <p>&copy; 2024 Haitao Wang. All rights reserved.</p>
+    </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/contrib/auto-render.min.js"></script>
+<script src="../js/main.js"></script>
+<script>
+    // Initialize KaTeX rendering
+    renderMathInElement(document.body, {
+        delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false}
+        ]
+    });
+</script>
+</body>
+</html>
