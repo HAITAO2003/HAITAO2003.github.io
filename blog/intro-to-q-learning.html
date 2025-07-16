@@ -6,25 +6,134 @@
     <title>Introduction to Q-Learning - Haitao Wang</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css">
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .blog-post-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .blog-post-content h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .blog-post-content h2 {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+
+        .blog-post-content p {
+            margin-bottom: 20px;
+            line-height: 1.8;
+            color: var(--text-dark);
+        }
+
+        pre {
+            background: var(--light-bg);
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        code {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: 40px;
+            transition: gap 0.3s ease;
+        }
+
+        .back-link:hover {
+            gap: 10px;
+        }
+
+        .post-actions-bar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 50px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 40px 0;
+            border: 1px solid var(--border-color);
+        }
+
+        .post-actions-bar .like-btn,
+        .post-actions-bar .comment-btn,
+        .post-actions-bar .share-btn {
+            background: none;
+            border: none;
+            color: var(--text-dark);
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .post-actions-bar .like-btn:hover,
+        .post-actions-bar .comment-btn:hover,
+        .post-actions-bar .share-btn:hover {
+            background: var(--light-bg);
+            color: var(--accent-color);
+        }
+
+        .post-actions-bar .like-btn.liked {
+            color: var(--danger-color);
+        }
+
+        .post-comment-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid var(--border-color);
+        }
+    </style>
 </head>
 <body>
 <header>
     <div class="container">
         <nav>
-            <a href="../index.html">Home</a>
-            <a href="../about.html">About</a>
-            <a href="../blog.html">Blog</a>
-            <a href="../projects.html">Projects</a>
-            <a href="../resources.html">Resources</a>
-            <a href="../forum.html">Forum</a>
+            <a href="../index.html" class="nav-logo">Haitao Wang</a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="../blog.html">Blog</a>
+                <a href="../projects.html">Projects</a>
+                <a href="../resources.html">Resources</a>
+                <a href="../forum.html">Forum</a>
+            </div>
         </nav>
     </div>
 </header>
 
 <div class="container">
-    <div class="content">
+    <article class="blog-post-content" data-post-id="1">
         <h1>Introduction to Q-Learning</h1>
-        <div class="blog-meta">January 15, 2024 • <span class="tag">q-learning</span> <span class="tag">basics</span></div>
+        <div class="blog-meta">
+            <span><i class="far fa-calendar"></i> January 15, 2024</span>
+            <span><i class="far fa-clock"></i> 8 min read</span>
+            <span class="tag">q-learning</span>
+            <span class="tag">basics</span>
+        </div>
 
         <p>
             Q-Learning is one of the most fundamental algorithms in reinforcement learning. It's a model-free,
@@ -64,12 +173,56 @@ class QLearningAgent:
         target = reward + self.gamma * np.max(self.Q[next_state])
         self.Q[state, action] += self.alpha * (target - self.Q[state, action])</code></pre>
 
-        <p><a href="../blog.html">← Back to Blog</a></p>
-    </div>
+        <!-- Post actions bar -->
+        <div class="post-actions-bar">
+            <button class="like-btn" onclick="toggleLike(1)">
+                <i class="far fa-heart"></i> <span class="like-count">0</span>
+            </button>
+            <button class="comment-btn" onclick="toggleComments(1)">
+                <i class="far fa-comment"></i> <span class="comment-count">0</span>
+            </button>
+            <span class="view-count"><i class="far fa-eye"></i> 0</span>
+            <button class="share-btn" onclick="sharePost()">
+                <i class="fas fa-share"></i> Share
+            </button>
+        </div>
+
+        <!-- Comments Section -->
+        <div class="comments-section post-comment-section" id="comments-1">
+            <h3>Comments</h3>
+            <div class="comment-form">
+                <input type="text" placeholder="Your name" class="comment-name" id="comment-name-1">
+                <textarea placeholder="Share your thoughts..." class="comment-text" id="comment-text-1"></textarea>
+                <button class="btn-primary" onclick="addComment(1)">Post Comment</button>
+            </div>
+            <div class="comments-list" id="comments-list-1">
+                <!-- Comments will be loaded here -->
+            </div>
+        </div>
+
+        <a href="../blog.html" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Blog
+        </a>
+    </article>
 </div>
+
+<footer>
+    <div class="container">
+        <p>&copy; 2024 Haitao Wang. All rights reserved.</p>
+    </div>
+</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/contrib/auto-render.min.js"></script>
 <script src="../js/main.js"></script>
+<script>
+    // Initialize KaTeX rendering
+    renderMathInElement(document.body, {
+        delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false}
+        ]
+    });
+</script>
 </body>
 </html>

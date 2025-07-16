@@ -1,56 +1,309 @@
-// Blog posts data - Add new posts here and they will appear on both home and blog pages
+// ==========================================
+// BLOG DATA MANAGEMENT
+// ==========================================
+
+// Blog posts metadata - Single source of truth for blog post information
 const BLOG_POSTS_DATA = [
     {
         id: 1,
         title: "Introduction to Q-Learning",
         url: "blog/intro-to-q-learning.html",
         category: "Fundamentals",
-        date: "January 15, 2025",
+        date: "January 15, 2024",
         readTime: 8,
         tags: ["q-learning", "basics"],
-        excerpt: "A comprehensive introduction to Q-Learning, one of the fundamental algorithms in reinforcement learning. We'll explore the mathematical foundations, understand the Bellman equation, and implement a simple example using the OpenAI Gym environment. Perfect for beginners looking to understand value-based methods.",
-        likes: 0,
-        comments: 0,
-        views: 0
-    },
-    // Add new blog posts here in the same format
+        excerpt: "A comprehensive introduction to Q-Learning, one of the fundamental algorithms in reinforcement learning. We'll explore the mathematical foundations, understand the Bellman equation, and implement a simple example using the OpenAI Gym environment. Perfect for beginners looking to understand value-based methods."
+    }
+    // Add new blog posts here - they will automatically have 0 likes/comments/views
     // Example:
-    {
-        id: 2,
-         title: "Understanding MDPs and POMDPs",
-         url: "blog/mdp-pomdp-intro.html",
-         category: "Theory",
-         date: "January 20, 2024",
-         readTime: 15,
-         tags: ["mdp", "pomdp", "theory"],
-         excerpt: "Explore the theoretical foundations of Markov Decision Processes and Partially Observable Markov Decision Processes...",
-         likes: 0,
-         comments: 0,
-         views: 0
-     }
+    // {
+    //     id: 2,
+    //     title: "Markov Decision Processes and Partially Observable Markov Decision Processes",
+    //     url: "blog/mdp-pomdp-intro.html",
+    //     category: "Theory",
+    //     date: "January 20, 2024",
+    //     readTime: 15,
+    //     tags: ["mdp", "pomdp", "theory"],
+    //     excerpt: "This introductory exploration of Markov Decision Processes and Partially Observable Markov Decision Processes establishes the theoretical foundation for understanding sequential decision-making under uncertainty."
+    // }
 ];
 
-// Get blog posts sorted by date (newest first)
-function getBlogPosts() {
-    return BLOG_POSTS_DATA.sort((a, b) => new Date(b.date) - new Date(a.date));
+// Blog state manager - Handles all blog statistics
+class BlogStateManager {
+    constructor() {
+        this.loadState();
+    }
+
+    loadState() {
+        const savedState = localStorage.getItem('blogState');
+        if (savedState) {
+            this.state = JSON.parse(savedState);
+            this.ensureAllPostsInitialized();
+        } else {
+            this.initializeState();
+        }
+    }
+
+    initializeState() {
+        this.state = {
+            posts: {}
+        };
+
+        BLOG_POSTS_DATA.forEach(post => {
+            this.state.posts[post.id] = {
+                likes: 0,
+                liked: false,
+                views: 0,
+                comments: []
+            };
+        });
+
+        this.saveState();
+    }
+
+    ensureAllPostsInitialized() {
+        // Ensure all posts in BLOG_POSTS_DATA have state entries
+        BLOG_POSTS_DATA.forEach(post => {
+            if (!this.state.posts[post.id]) {
+                this.state.posts[post.id] = {
+                    likes: 0,
+                    liked: false,
+                    views: 0,
+                    comments: []
+                };
+            }
+        });
+        this.saveState();
+    }
+
+    saveState() {
+        localStorage.setItem('blogState', JSON.stringify(this.state));
+    }
+
+    getPostStats(postId) {
+        return this.state.posts[postId] || { likes: 0, liked: false, views: 0, comments: [] };
+    }
+
+    toggleLike(postId) {
+        const post = this.state.posts[postId];
+        if (!post) return;
+
+        if (post.liked) {
+            post.likes = Math.max(0, post.likes - 1);
+            post.liked = false;
+        } else {
+            post.likes++;
+            post.liked = true;
+        }
+
+        this.saveState();
+        this.updateUIForPost(postId);
+    }
+
+    addComment(postId, name, text) {
+        const post = this.state.posts[postId];
+        if (!post) return;
+
+        post.comments.unshift({
+            name: name,
+            text: text,
+            date: this.getRelativeTime(new Date())
+        });
+
+        this.saveState();
+        this.updateUIForPost(postId);
+    }
+
+    incrementView(postId) {
+        const post = this.state.posts[postId];
+        if (!post) return;
+
+        post.views++;
+        this.saveState();
+    }
+
+    updateUIForPost(postId) {
+        const stats = this.getPostStats(postId);
+
+        // Update all instances of this post's stats across the page
+        document.querySelectorAll(`[data-post-id="${postId}"]`).forEach(element => {
+            // Update likes
+            const likeBtn = element.querySelector('.like-btn');
+            const likeCount = element.querySelector('.like-count');
+            if (likeBtn && likeCount) {
+                likeCount.textContent = stats.likes;
+                const icon = likeBtn.querySelector('i');
+                if (stats.liked) {
+                    likeBtn.classList.add('liked');
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                } else {
+                    likeBtn.classList.remove('liked');
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                }
+            }
+
+            // Update comments count
+            const commentCount = element.querySelector('.comment-count');
+            if (commentCount) {
+                commentCount.textContent = stats.comments.length;
+            }
+
+            // Update views
+            const viewCount = element.querySelector('.view-count');
+            if (viewCount) {
+                viewCount.innerHTML = `<i class="far fa-eye"></i> ${this.formatCount(stats.views)}`;
+            }
+        });
+
+        // Also update standalone view counts (for blog post pages)
+        const standaloneViewCount = document.querySelector('.post-actions-bar .view-count');
+        if (standaloneViewCount) {
+            standaloneViewCount.innerHTML = `<i class="far fa-eye"></i> ${this.formatCount(stats.views)}`;
+        }
+
+        // Also update in post cards on home page
+        document.querySelectorAll('.post-card').forEach(card => {
+            const link = card.getAttribute('href');
+            const post = BLOG_POSTS_DATA.find(p => p.url === link);
+            if (post && post.id === postId) {
+                const postStats = card.querySelector('.post-stats');
+                if (postStats) {
+                    postStats.innerHTML = `
+                        <span><i class="far fa-heart"></i> ${stats.likes}</span>
+                        <span><i class="far fa-comment"></i> ${stats.comments.length}</span>
+                        <span><i class="far fa-eye"></i> ${this.formatCount(stats.views)}</span>
+                    `;
+                }
+            }
+        });
+    }
+
+    formatCount(count) {
+        if (count >= 1000) {
+            return (count / 1000).toFixed(1) + 'k';
+        }
+        return count.toString();
+    }
+
+    getRelativeTime(date) {
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+
+        if (diffMins < 1) return 'just now';
+        if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
+
+        const diffHours = Math.floor(diffMins / 60);
+        if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+
+        const diffDays = Math.floor(diffHours / 24);
+        if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+
+        const diffWeeks = Math.floor(diffDays / 7);
+        return `${diffWeeks} week${diffWeeks > 1 ? 's' : ''} ago`;
+    }
 }
 
-// Add active class to current page nav link
-document.addEventListener('DOMContentLoaded', function() {
-    const currentLocation = location.pathname.split('/').pop() || 'index.html';
-    const navLinks = document.querySelectorAll('.nav-links a');
+// Initialize blog state manager
+const blogStateManager = new BlogStateManager();
 
-    navLinks.forEach(link => {
-        const href = link.getAttribute('href');
-        if (href === currentLocation || (currentLocation === '' && href === 'index.html')) {
-            link.classList.add('active');
+// ==========================================
+// FORUM DATA MANAGEMENT
+// ==========================================
+
+class ForumManager {
+    constructor() {
+        this.loadPosts();
+    }
+
+    loadPosts() {
+        const savedPosts = localStorage.getItem('forumPosts');
+        this.posts = savedPosts ? JSON.parse(savedPosts) : [];
+
+        // Clear any example posts if this is the first time
+        if (this.posts.length === 0) {
+            this.savePosts();
         }
-    });
+    }
 
-    // Initialize blog data from sessionStorage
-    initializeBlogData();
+    savePosts() {
+        localStorage.setItem('forumPosts', JSON.stringify(this.posts));
+    }
 
-    // Initialize KaTeX rendering if on a page with math
+    addPost(title, author, content) {
+        const newPost = {
+            id: Date.now(), // Use timestamp as unique ID
+            title,
+            author,
+            content,
+            date: new Date().toISOString().split('T')[0],
+            answers: []
+        };
+
+        this.posts.unshift(newPost);
+        this.savePosts();
+        return newPost;
+    }
+
+    addAnswer(postId, author, content) {
+        const post = this.posts.find(p => p.id === postId);
+        if (!post) return;
+
+        post.answers.push({
+            author,
+            content,
+            date: new Date().toISOString().split('T')[0]
+        });
+
+        this.savePosts();
+    }
+
+    getPosts() {
+        return this.posts;
+    }
+}
+
+const forumManager = new ForumManager();
+
+// ==========================================
+// UTILITY FUNCTIONS
+// ==========================================
+
+function getBlogPosts() {
+    // Combine static data with dynamic stats
+    return BLOG_POSTS_DATA.map(post => {
+        const stats = blogStateManager.getPostStats(post.id);
+        return {
+            ...post,
+            likes: stats.likes,
+            comments: stats.comments.length,
+            views: stats.views
+        };
+    }).sort((a, b) => new Date(b.date) - new Date(a.date));
+}
+
+// ==========================================
+// PAGE INITIALIZATION
+// ==========================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Set active navigation
+    setActiveNavigation();
+
+    // Initialize page-specific functionality
+    const currentPath = window.location.pathname;
+
+    if (currentPath.includes('blog/') && !currentPath.endsWith('blog.html')) {
+        // Individual blog post page
+        initializeBlogPost();
+    } else if (currentPath.endsWith('forum.html')) {
+        // Forum page
+        initializeForum();
+    }
+
+    // Initialize KaTeX if available
     if (typeof renderMathInElement !== 'undefined') {
         renderMathInElement(document.body, {
             delimiters: [
@@ -60,7 +313,23 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Add scroll effect to header
+    // Add header scroll effect
+    initializeHeaderScroll();
+});
+
+function setActiveNavigation() {
+    const currentLocation = location.pathname.split('/').pop() || 'index.html';
+    const navLinks = document.querySelectorAll('.nav-links a');
+
+    navLinks.forEach(link => {
+        const href = link.getAttribute('href');
+        if (href === currentLocation || (currentLocation === '' && href === 'index.html')) {
+            link.classList.add('active');
+        }
+    });
+}
+
+function initializeHeaderScroll() {
     let lastScroll = 0;
     window.addEventListener('scroll', () => {
         const currentScroll = window.pageYOffset;
@@ -74,183 +343,63 @@ document.addEventListener('DOMContentLoaded', function() {
 
         lastScroll = currentScroll;
     });
-});
+}
 
-// Blog functionality
-let blogData = {};
-
-function initializeBlogData() {
-    const storedData = localStorage.getItem('blogData');
-    if (storedData) {
-        blogData = JSON.parse(storedData);
-    } else {
-        // Initialize with data from BLOG_POSTS_DATA
-        blogData = {
-            likes: {},
-            views: {},
-            comments: {}
-        };
-
-        // Initialize data for each blog post
-        BLOG_POSTS_DATA.forEach(post => {
-            blogData.likes[post.id] = { count: post.likes || 0, liked: false };
-            blogData.views[post.id] = post.views || 0;
-            if (post.id === 1) {
-                // Add sample comments for the Q-Learning post
-                blogData.comments[1] = [
-                    { name: "Sarah Chen", date: "2 days ago", text: "Great introduction! The step-by-step breakdown of the Bellman equation really helped me understand the concept." },
-                    { name: "Alex Kumar", date: "1 week ago", text: "Would love to see a follow-up on Double Q-Learning to address the overestimation bias!" }
-                ];
-            } else {
-                blogData.comments[post.id] = [];
-            }
-        });
-
-        saveBlogData();
-    }
-
-    // Increment view count if on blog post page
+function initializeBlogPost() {
     const postElement = document.querySelector('[data-post-id]');
-    if (postElement) {
-        const postId = parseInt(postElement.getAttribute('data-post-id'));
-        if (blogData.views[postId] !== undefined) {
-            blogData.views[postId]++;
-            saveBlogData();
+    if (!postElement) return;
 
-            // Update view count display if element exists
-            const viewCountElement = document.getElementById(`view-count-${postId}`);
-            if (viewCountElement) {
-                viewCountElement.textContent = formatViewCount(blogData.views[postId]);
-            }
-        }
-    }
+    const postId = parseInt(postElement.getAttribute('data-post-id'));
 
-    updateBlogUI();
+    // Increment view count
+    blogStateManager.incrementView(postId);
+
+    // Update UI with current stats
+    blogStateManager.updateUIForPost(postId);
+
+    // Load comments
+    loadCommentsForPost(postId);
 }
 
-function saveBlogData() {
-    localStorage.setItem('blogData', JSON.stringify(blogData));
-}
-
-function updateBlogUI() {
-    // Update like counts and states
-    Object.keys(blogData.likes).forEach(postId => {
-        const likeBtn = document.querySelector(`[data-post-id="${postId}"] .like-btn`);
-        const likeCount = document.querySelector(`[data-post-id="${postId}"] .like-count`);
-
-        if (likeBtn && likeCount) {
-            likeCount.textContent = blogData.likes[postId].count;
-            if (blogData.likes[postId].liked) {
-                likeBtn.classList.add('liked');
-                likeBtn.querySelector('i').classList.remove('far');
-                likeBtn.querySelector('i').classList.add('fas');
-            }
-        }
-
-        // Update comment counts
-        const commentCount = document.querySelector(`[data-post-id="${postId}"] .comment-count`);
-        if (commentCount && blogData.comments[postId]) {
-            commentCount.textContent = blogData.comments[postId].length;
-        }
-
-        // Update view counts
-        const viewCount = document.querySelector(`[data-post-id="${postId}"] .view-count`);
-        if (viewCount && blogData.views[postId]) {
-            const viewText = formatViewCount(blogData.views[postId]);
-            // Handle both span and direct text content
-            if (viewCount.querySelector('span')) {
-                viewCount.querySelector('span').textContent = viewText;
-            } else {
-                viewCount.innerHTML = `<i class="far fa-eye"></i> ${viewText}`;
-            }
-        }
-    });
-
-    // Load comments for any visible comment sections
-    document.querySelectorAll('.comments-section[style*="block"]').forEach(section => {
-        const postId = section.id.replace('comments-', '');
-        if (postId) {
-            loadComments(postId);
-        }
-    });
-}
-
-function formatViewCount(count) {
-    if (count >= 1000) {
-        return (count / 1000).toFixed(1) + 'k';
-    }
-    return count.toString();
-}
+// ==========================================
+// BLOG INTERACTION FUNCTIONS
+// ==========================================
 
 function toggleLike(postId) {
-    const likeBtn = document.querySelector(`[data-post-id="${postId}"] .like-btn`);
-    const likeCount = document.querySelector(`[data-post-id="${postId}"] .like-count`);
-    const icon = likeBtn.querySelector('i');
-
-    if (!blogData.likes[postId]) {
-        blogData.likes[postId] = { count: 0, liked: false };
-    }
-
-    if (blogData.likes[postId].liked) {
-        blogData.likes[postId].count--;
-        blogData.likes[postId].liked = false;
-        likeBtn.classList.remove('liked');
-        icon.classList.remove('fas');
-        icon.classList.add('far');
-    } else {
-        blogData.likes[postId].count++;
-        blogData.likes[postId].liked = true;
-        likeBtn.classList.add('liked');
-        icon.classList.remove('far');
-        icon.classList.add('fas');
-    }
-
-    likeCount.textContent = blogData.likes[postId].count;
-    saveBlogData();
+    blogStateManager.toggleLike(postId);
 
     // Add animation
-    likeBtn.style.transform = 'scale(1.2)';
-    setTimeout(() => {
-        likeBtn.style.transform = 'scale(1)';
-    }, 200);
+    const likeBtn = document.querySelector(`[data-post-id="${postId}"] .like-btn`);
+    if (likeBtn) {
+        likeBtn.style.transform = 'scale(1.2)';
+        setTimeout(() => {
+            likeBtn.style.transform = 'scale(1)';
+        }, 200);
+    }
 }
 
 function toggleComments(postId) {
     const commentsSection = document.getElementById(`comments-${postId}`);
 
-    // For blog post pages, the comments section is always visible
-    if (window.location.pathname.includes('.html') && !window.location.pathname.includes('blog.html')) {
-        // Scroll to comments section on blog post page
-        const commentSection = document.querySelector('.post-comment-section');
-        if (commentSection) {
-            commentSection.scrollIntoView({ behavior: 'smooth' });
-        }
-        return;
-    }
+    if (!commentsSection) return;
 
-    // For blog listing page, toggle visibility
-    if (commentsSection) {
-        const isVisible = commentsSection.style.display !== 'none';
+    const isVisible = commentsSection.style.display !== 'none';
 
-        if (isVisible) {
-            commentsSection.style.display = 'none';
-        } else {
-            commentsSection.style.display = 'block';
-            // Load comments
-            loadComments(postId);
-        }
+    if (isVisible) {
+        commentsSection.style.display = 'none';
+    } else {
+        commentsSection.style.display = 'block';
+        loadCommentsForPost(postId);
     }
 }
 
-function loadComments(postId) {
+function loadCommentsForPost(postId) {
     const commentsList = document.getElementById(`comments-list-${postId}`);
     if (!commentsList) return;
 
-    if (!blogData.comments[postId]) {
-        blogData.comments[postId] = [];
-    }
+    const stats = blogStateManager.getPostStats(postId);
 
-    commentsList.innerHTML = blogData.comments[postId].map(comment => `
+    commentsList.innerHTML = stats.comments.map(comment => `
         <div class="comment">
             <div class="comment-header">
                 <strong>${comment.name}</strong>
@@ -258,7 +407,7 @@ function loadComments(postId) {
             </div>
             <p>${comment.text}</p>
         </div>
-    `).join('');
+    `).join('') || '<p style="color: var(--text-light); text-align: center;">No comments yet. Be the first to comment!</p>';
 }
 
 function addComment(postId) {
@@ -270,187 +419,158 @@ function addComment(postId) {
         return;
     }
 
-    if (!blogData.comments[postId]) {
-        blogData.comments[postId] = [];
-    }
-
-    const newComment = {
-        name: nameInput.value.trim(),
-        date: 'just now',
-        text: textInput.value.trim()
-    };
-
-    blogData.comments[postId].unshift(newComment);
-    saveBlogData();
-
-    // Update UI
-    loadComments(postId);
-    const commentCount = document.querySelector(`[data-post-id="${postId}"] .comment-count`);
-    if (commentCount) {
-        commentCount.textContent = blogData.comments[postId].length;
-    }
+    blogStateManager.addComment(postId, nameInput.value.trim(), textInput.value.trim());
 
     // Clear form
     nameInput.value = '';
     textInput.value = '';
 
+    // Reload comments
+    loadCommentsForPost(postId);
+
     // Add animation to new comment
     const commentsList = document.getElementById(`comments-list-${postId}`);
     const firstComment = commentsList.firstElementChild;
-    if (firstComment) {
+    if (firstComment && firstComment.classList.contains('comment')) {
         firstComment.style.animation = 'slideDown 0.3s ease-out';
     }
 }
 
-// Forum functionality (only loaded on forum.html)
-if (document.getElementById('forum-posts')) {
-    let forumPosts = [];
+// ==========================================
+// FORUM FUNCTIONS
+// ==========================================
 
-    // Initialize forum with sample data
-    function initializeForum() {
-        // Check if we have stored posts in localStorage
-        const storedPosts = localStorage.getItem('forumPosts');
-
-        if (storedPosts) {
-            forumPosts = JSON.parse(storedPosts);
-        } else {
-            // Sample data for demonstration
-            forumPosts = [
-                {
-                    id: 1,
-                    title: "How to handle continuous action spaces in RL?",
-                    author: "Alex Chen",
-                    date: "2024-01-10",
-                    content: "I'm working on a robotics project where the action space is continuous. What are the best algorithms to use? I've heard about DDPG and SAC but not sure which to choose.",
-                    answers: [
-                        {
-                            author: "Sarah Liu",
-                            date: "2024-01-11",
-                            content: "For continuous action spaces, SAC (Soft Actor-Critic) is generally more stable and sample-efficient than DDPG. It uses entropy regularization which helps with exploration."
-                        }
-                    ]
-                },
-                {
-                    id: 2,
-                    title: "Best practices for reward shaping?",
-                    author: "Mike Johnson",
-                    date: "2024-01-08",
-                    content: "I'm finding that my agent takes too long to learn with sparse rewards. What are some good practices for reward shaping without introducing bias?",
-                    answers: []
-                }
-            ];
-            // Store in localStorage
-            localStorage.setItem('forumPosts', JSON.stringify(forumPosts));
-        }
-
-        displayForumPosts();
-    }
-
-    function displayForumPosts() {
-        const container = document.getElementById('forum-posts');
-        container.innerHTML = '';
-
-        forumPosts.forEach(post => {
-            const postElement = document.createElement('div');
-            postElement.className = 'forum-post';
-            postElement.innerHTML = `
-                <h3>${post.title}</h3>
-                <div class="post-meta">Asked by ${post.author} on ${post.date}</div>
-                <p>${post.content}</p>
-                <div class="answers">
-                    <h4>Answers (${post.answers.length})</h4>
-                    ${post.answers.map(answer => `
-                        <div class="answer">
-                            <strong>${answer.author}</strong> • ${answer.date}<br>
-                            ${answer.content}
-                        </div>
-                    `).join('')}
-                    <button class="btn-secondary" onclick="showAnswerForm(${post.id})">Add Answer</button>
-                    <div id="answer-form-${post.id}" style="display: none;" class="answer-form">
-                        <div class="form-group">
-                            <input type="text" placeholder="Your name" id="answer-author-${post.id}">
-                        </div>
-                        <div class="form-group">
-                            <textarea placeholder="Your answer" id="answer-content-${post.id}"></textarea>
-                        </div>
-                        <button class="btn-secondary" onclick="submitAnswer(${post.id})">Submit</button>
-                        <button class="btn-secondary" onclick="hideAnswerForm(${post.id})">Cancel</button>
-                    </div>
-                </div>
-            `;
-            container.appendChild(postElement);
-        });
-    }
-
-    window.openNewQuestionModal = function() {
-        document.getElementById('questionModal').style.display = 'block';
-    }
-
-    window.closeModal = function() {
-        document.getElementById('questionModal').style.display = 'none';
-    }
-
-    window.submitQuestion = function(event) {
-        event.preventDefault();
-
-        const newPost = {
-            id: forumPosts.length + 1,
-            title: document.getElementById('questionTitle').value,
-            author: document.getElementById('questionAuthor').value,
-            content: document.getElementById('questionContent').value,
-            date: new Date().toISOString().split('T')[0],
-            answers: []
-        };
-
-        forumPosts.unshift(newPost);
-        localStorage.setItem('forumPosts', JSON.stringify(forumPosts));
-        displayForumPosts();
-        closeModal();
-
-        // Reset form
-        document.getElementById('questionTitle').value = '';
-        document.getElementById('questionAuthor').value = '';
-        document.getElementById('questionContent').value = '';
-    }
-
-    window.showAnswerForm = function(postId) {
-        document.getElementById(`answer-form-${postId}`).style.display = 'block';
-    }
-
-    window.hideAnswerForm = function(postId) {
-        document.getElementById(`answer-form-${postId}`).style.display = 'none';
-    }
-
-    window.submitAnswer = function(postId) {
-        const author = document.getElementById(`answer-author-${postId}`).value;
-        const content = document.getElementById(`answer-content-${postId}`).value;
-
-        if (author && content) {
-            const post = forumPosts.find(p => p.id === postId);
-            post.answers.push({
-                author: author,
-                date: new Date().toISOString().split('T')[0],
-                content: content
-            });
-
-            localStorage.setItem('forumPosts', JSON.stringify(forumPosts));
-            displayForumPosts();
-        }
-    }
-
-    // Close modal when clicking outside
-    window.onclick = function(event) {
-        const modal = document.getElementById('questionModal');
-        if (event.target == modal) {
-            closeModal();
-        }
-    }
-
-    // Initialize forum on page load
-    initializeForum();
+function initializeForum() {
+    displayForumPosts();
+    updateForumStats();
 }
 
-// Share functionality
+function displayForumPosts() {
+    const container = document.getElementById('forum-posts');
+    if (!container) return;
+
+    const posts = forumManager.getPosts();
+
+    if (posts.length === 0) {
+        container.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 40px;">No questions yet. Be the first to ask!</p>';
+        return;
+    }
+
+    container.innerHTML = posts.map(post => `
+        <div class="forum-post">
+            <h3>${post.title}</h3>
+            <div class="post-meta">Asked by ${post.author} on ${post.date}</div>
+            <p>${post.content}</p>
+            <div class="answers">
+                <h4>Answers (${post.answers.length})</h4>
+                ${post.answers.map(answer => `
+                    <div class="answer">
+                        <strong>${answer.author}</strong> • ${answer.date}<br>
+                        ${answer.content}
+                    </div>
+                `).join('')}
+                <button class="btn-secondary" onclick="showAnswerForm(${post.id})">Add Answer</button>
+                <div id="answer-form-${post.id}" style="display: none;" class="answer-form">
+                    <div class="form-group">
+                        <input type="text" placeholder="Your name" id="answer-author-${post.id}">
+                    </div>
+                    <div class="form-group">
+                        <textarea placeholder="Your answer" id="answer-content-${post.id}"></textarea>
+                    </div>
+                    <button class="btn-secondary" onclick="submitAnswer(${post.id})">Submit</button>
+                    <button class="btn-secondary" onclick="hideAnswerForm(${post.id})">Cancel</button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function updateForumStats() {
+    const posts = forumManager.getPosts();
+    const totalAnswers = posts.reduce((sum, post) => sum + post.answers.length, 0);
+    const answeredPosts = posts.filter(post => post.answers.length > 0).length;
+    const answerRate = posts.length > 0 ? Math.round((answeredPosts / posts.length) * 100) : 0;
+
+    // Update stats display
+    const statsElements = document.querySelectorAll('.stat-number');
+    if (statsElements.length >= 4) {
+        statsElements[0].textContent = posts.length; // Total Questions
+        statsElements[1].textContent = totalAnswers; // Answers
+        statsElements[2].textContent = posts.length + totalAnswers; // Active Members (estimate)
+        statsElements[3].textContent = answerRate + '%'; // Questions Answered
+    }
+}
+
+// Forum global functions
+window.openNewQuestionModal = function() {
+    const modal = document.getElementById('questionModal');
+    if (modal) modal.style.display = 'block';
+}
+
+window.closeModal = function() {
+    const modal = document.getElementById('questionModal');
+    if (modal) modal.style.display = 'none';
+}
+
+window.submitQuestion = function(event) {
+    event.preventDefault();
+
+    const title = document.getElementById('questionTitle').value;
+    const author = document.getElementById('questionAuthor').value;
+    const content = document.getElementById('questionContent').value;
+
+    if (!title || !author || !content) {
+        alert('Please fill in all fields.');
+        return;
+    }
+
+    forumManager.addPost(title, author, content);
+    displayForumPosts();
+    updateForumStats();
+    closeModal();
+
+    // Reset form
+    document.getElementById('questionTitle').value = '';
+    document.getElementById('questionAuthor').value = '';
+    document.getElementById('questionContent').value = '';
+}
+
+window.showAnswerForm = function(postId) {
+    const form = document.getElementById(`answer-form-${postId}`);
+    if (form) form.style.display = 'block';
+}
+
+window.hideAnswerForm = function(postId) {
+    const form = document.getElementById(`answer-form-${postId}`);
+    if (form) form.style.display = 'none';
+}
+
+window.submitAnswer = function(postId) {
+    const author = document.getElementById(`answer-author-${postId}`).value;
+    const content = document.getElementById(`answer-content-${postId}`).value;
+
+    if (!author || !content) {
+        alert('Please fill in all fields.');
+        return;
+    }
+
+    forumManager.addAnswer(postId, author, content);
+    displayForumPosts();
+    updateForumStats();
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('questionModal');
+    if (event.target === modal) {
+        closeModal();
+    }
+}
+
+// ==========================================
+// SHARE FUNCTIONALITY
+// ==========================================
+
 window.sharePost = function() {
     if (navigator.share) {
         navigator.share({
@@ -459,8 +579,104 @@ window.sharePost = function() {
             url: window.location.href
         });
     } else {
-        // Fallback - copy to clipboard
         navigator.clipboard.writeText(window.location.href);
         alert('Link copied to clipboard!');
     }
+}
+
+// ==========================================
+// HOME PAGE BLOG POSTS LOADER
+// ==========================================
+
+window.loadRecentBlogPosts = function() {
+    const container = document.getElementById('home-recent-posts');
+    if (!container) return;
+
+    const blogPosts = getBlogPosts();
+    const recentPosts = blogPosts.slice(0, 3);
+
+    if (recentPosts.length === 0) {
+        container.innerHTML = '<p style="text-align: center; color: var(--text-light);">No blog posts yet. Check back soon!</p>';
+        return;
+    }
+
+    container.innerHTML = recentPosts.map(post => {
+        const stats = blogStateManager.getPostStats(post.id);
+        return `
+            <a href="${post.url}" class="post-card">
+                <div class="post-card-header">
+                    <span class="post-category">${post.category}</span>
+                    <span class="post-date">${post.date}</span>
+                </div>
+                <h3>${post.title}</h3>
+                <p>${post.excerpt}</p>
+                <div class="post-stats">
+                    <span><i class="far fa-heart"></i> ${stats.likes}</span>
+                    <span><i class="far fa-comment"></i> ${stats.comments.length}</span>
+                    <span><i class="far fa-eye"></i> ${blogStateManager.formatCount(stats.views)}</span>
+                </div>
+            </a>
+        `;
+    }).join('');
+}
+
+// ==========================================
+// BLOG PAGE POSTS LOADER
+// ==========================================
+
+window.loadAllBlogPosts = function() {
+    const container = document.getElementById('blog-list-container');
+    if (!container) return;
+
+    const blogPosts = getBlogPosts();
+
+    if (blogPosts.length === 0) {
+        container.innerHTML = '<p style="text-align: center; color: var(--text-light); font-size: 1.2rem; margin: 60px 0;">No blog posts yet. Check back soon for exciting content on reinforcement learning!</p>';
+        return;
+    }
+
+    container.innerHTML = blogPosts.map(post => {
+        const stats = blogStateManager.getPostStats(post.id);
+        return `
+            <article class="blog-item" data-post-id="${post.id}">
+                <div class="blog-item-header">
+                    <h2 class="blog-title"><a href="${post.url}">${post.title}</a></h2>
+                    <span class="blog-category">${post.category}</span>
+                </div>
+                <div class="blog-meta">
+                    <span><i class="far fa-calendar"></i> ${post.date}</span>
+                    <span><i class="far fa-clock"></i> ${post.readTime} min read</span>
+                    <span class="blog-tags">
+                        ${post.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                    </span>
+                </div>
+                <p class="blog-excerpt">${post.excerpt}</p>
+                <div class="blog-actions">
+                    <div class="blog-stats">
+                        <button class="like-btn ${stats.liked ? 'liked' : ''}" onclick="toggleLike(${post.id})">
+                            <i class="${stats.liked ? 'fas' : 'far'} fa-heart"></i> <span class="like-count">${stats.likes}</span>
+                        </button>
+                        <button class="comment-btn" onclick="toggleComments(${post.id})">
+                            <i class="far fa-comment"></i> <span class="comment-count">${stats.comments.length}</span>
+                        </button>
+                        <span class="view-count"><i class="far fa-eye"></i> ${blogStateManager.formatCount(stats.views)}</span>
+                    </div>
+                    <a href="${post.url}" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <!-- Comments Section -->
+                <div class="comments-section" id="comments-${post.id}" style="display: none;">
+                    <h3>Comments</h3>
+                    <div class="comment-form">
+                        <input type="text" placeholder="Your name" class="comment-name" id="comment-name-${post.id}">
+                        <textarea placeholder="Share your thoughts..." class="comment-text" id="comment-text-${post.id}"></textarea>
+                        <button class="btn-primary" onclick="addComment(${post.id})">Post Comment</button>
+                    </div>
+                    <div class="comments-list" id="comments-list-${post.id}">
+                        <!-- Comments will be loaded here -->
+                    </div>
+                </div>
+            </article>
+        `;
+    }).join('');
 }
