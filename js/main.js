@@ -1,3 +1,40 @@
+// Blog posts data - Add new posts here and they will appear on both home and blog pages
+const BLOG_POSTS_DATA = [
+    {
+        id: 1,
+        title: "Introduction to Q-Learning",
+        url: "blog/intro-to-q-learning.html",
+        category: "Fundamentals",
+        date: "January 15, 2025",
+        readTime: 8,
+        tags: ["q-learning", "basics"],
+        excerpt: "A comprehensive introduction to Q-Learning, one of the fundamental algorithms in reinforcement learning. We'll explore the mathematical foundations, understand the Bellman equation, and implement a simple example using the OpenAI Gym environment. Perfect for beginners looking to understand value-based methods.",
+        likes: 0,
+        comments: 0,
+        views: 0
+    },
+    // Add new blog posts here in the same format
+    // Example:
+    {
+        id: 2,
+         title: "Understanding MDPs and POMDPs",
+         url: "blog/mdp-pomdp-intro.html",
+         category: "Theory",
+         date: "January 20, 2024",
+         readTime: 15,
+         tags: ["mdp", "pomdp", "theory"],
+         excerpt: "Explore the theoretical foundations of Markov Decision Processes and Partially Observable Markov Decision Processes...",
+         likes: 0,
+         comments: 0,
+         views: 0
+     }
+];
+
+// Get blog posts sorted by date (newest first)
+function getBlogPosts() {
+    return BLOG_POSTS_DATA.sort((a, b) => new Date(b.date) - new Date(a.date));
+}
+
 // Add active class to current page nav link
 document.addEventListener('DOMContentLoaded', function() {
     const currentLocation = location.pathname.split('/').pop() || 'index.html';
@@ -47,52 +84,44 @@ function initializeBlogData() {
     if (storedData) {
         blogData = JSON.parse(storedData);
     } else {
-        // Initialize with default data
+        // Initialize with data from BLOG_POSTS_DATA
         blogData = {
-            likes: {
-                1: { count: 42, liked: false },
-                2: { count: 38, liked: false },
-                3: { count: 56, liked: false },
-                4: { count: 62, liked: false },
-                5: { count: 28, liked: false }  // Add this line
-            },
-            views: {
-                1: 1234,
-                2: 980,
-                3: 1567,
-                4: 2145,
-                5: 247  // Add this line
-            },
-            comments: {
-                1: [
+            likes: {},
+            views: {},
+            comments: {}
+        };
+
+        // Initialize data for each blog post
+        BLOG_POSTS_DATA.forEach(post => {
+            blogData.likes[post.id] = { count: post.likes || 0, liked: false };
+            blogData.views[post.id] = post.views || 0;
+            if (post.id === 1) {
+                // Add sample comments for the Q-Learning post
+                blogData.comments[1] = [
                     { name: "Sarah Chen", date: "2 days ago", text: "Great introduction! The step-by-step breakdown of the Bellman equation really helped me understand the concept." },
                     { name: "Alex Kumar", date: "1 week ago", text: "Would love to see a follow-up on Double Q-Learning to address the overestimation bias!" }
-                ],
-                2: [
-                    { name: "Michael Park", date: "3 days ago", text: "The visualization of the replay buffer really helped me understand why it's crucial for stability!" }
-                ],
-                3: [
-                    { name: "Emily Zhang", date: "1 week ago", text: "Finally understood why we need baselines! The variance reduction section was particularly helpful." }
-                ],
-                4: [
-                    { name: "David Liu", date: "4 days ago", text: "The comparison table between different actor-critic variants was super useful. Looking forward to the PPO post!" }
-                ],
-                5: [  // Add this section
-                    { name: "Dr. Elena Rodriguez", date: "2 hours ago", text: "Excellent mathematical exposition! The car racing example really helps bridge the gap between theory and practice. Looking forward to the next chapter on analytical solutions." },
-                    { name: "James Park", date: "1 day ago", text: "The belief state update equations in the POMDP section are beautifully explained. This is exactly what I needed to understand how partial observability is handled mathematically." }
-                ]
+                ];
+            } else {
+                blogData.comments[post.id] = [];
             }
-        };
+        });
+
         saveBlogData();
     }
 
     // Increment view count if on blog post page
     const postElement = document.querySelector('[data-post-id]');
-    if (postElement && window.location.pathname.includes('intro-to-q-learning.html')) {
-        const postId = postElement.getAttribute('data-post-id');
-        if (blogData.views[postId]) {
+    if (postElement) {
+        const postId = parseInt(postElement.getAttribute('data-post-id'));
+        if (blogData.views[postId] !== undefined) {
             blogData.views[postId]++;
             saveBlogData();
+
+            // Update view count display if element exists
+            const viewCountElement = document.getElementById(`view-count-${postId}`);
+            if (viewCountElement) {
+                viewCountElement.textContent = formatViewCount(blogData.views[postId]);
+            }
         }
     }
 
@@ -127,7 +156,21 @@ function updateBlogUI() {
         // Update view counts
         const viewCount = document.querySelector(`[data-post-id="${postId}"] .view-count`);
         if (viewCount && blogData.views[postId]) {
-            viewCount.textContent = formatViewCount(blogData.views[postId]);
+            const viewText = formatViewCount(blogData.views[postId]);
+            // Handle both span and direct text content
+            if (viewCount.querySelector('span')) {
+                viewCount.querySelector('span').textContent = viewText;
+            } else {
+                viewCount.innerHTML = `<i class="far fa-eye"></i> ${viewText}`;
+            }
+        }
+    });
+
+    // Load comments for any visible comment sections
+    document.querySelectorAll('.comments-section[style*="block"]').forEach(section => {
+        const postId = section.id.replace('comments-', '');
+        if (postId) {
+            loadComments(postId);
         }
     });
 }
@@ -137,29 +180,6 @@ function formatViewCount(count) {
         return (count / 1000).toFixed(1) + 'k';
     }
     return count.toString();
-}
-
-function updateBlogUI() {
-    // Update like counts and states
-    Object.keys(blogData.likes).forEach(postId => {
-        const likeBtn = document.querySelector(`[data-post-id="${postId}"] .like-btn`);
-        const likeCount = document.querySelector(`[data-post-id="${postId}"] .like-count`);
-
-        if (likeBtn && likeCount) {
-            likeCount.textContent = blogData.likes[postId].count;
-            if (blogData.likes[postId].liked) {
-                likeBtn.classList.add('liked');
-                likeBtn.querySelector('i').classList.remove('far');
-                likeBtn.querySelector('i').classList.add('fas');
-            }
-        }
-
-        // Update comment counts
-        const commentCount = document.querySelector(`[data-post-id="${postId}"] .comment-count`);
-        if (commentCount && blogData.comments[postId]) {
-            commentCount.textContent = blogData.comments[postId].length;
-        }
-    });
 }
 
 function toggleLike(postId) {
@@ -199,7 +219,7 @@ function toggleComments(postId) {
     const commentsSection = document.getElementById(`comments-${postId}`);
 
     // For blog post pages, the comments section is always visible
-    if (window.location.pathname.includes('intro-to-q-learning.html')) {
+    if (window.location.pathname.includes('.html') && !window.location.pathname.includes('blog.html')) {
         // Scroll to comments section on blog post page
         const commentSection = document.querySelector('.post-comment-section');
         if (commentSection) {
@@ -224,6 +244,8 @@ function toggleComments(postId) {
 
 function loadComments(postId) {
     const commentsList = document.getElementById(`comments-list-${postId}`);
+    if (!commentsList) return;
+
     if (!blogData.comments[postId]) {
         blogData.comments[postId] = [];
     }
@@ -243,7 +265,7 @@ function addComment(postId) {
     const nameInput = document.getElementById(`comment-name-${postId}`);
     const textInput = document.getElementById(`comment-text-${postId}`);
 
-    if (!nameInput.value.trim() || !textInput.value.trim()) {
+    if (!nameInput || !textInput || !nameInput.value.trim() || !textInput.value.trim()) {
         alert('Please enter both your name and comment.');
         return;
     }
@@ -264,7 +286,9 @@ function addComment(postId) {
     // Update UI
     loadComments(postId);
     const commentCount = document.querySelector(`[data-post-id="${postId}"] .comment-count`);
-    commentCount.textContent = blogData.comments[postId].length;
+    if (commentCount) {
+        commentCount.textContent = blogData.comments[postId].length;
+    }
 
     // Clear form
     nameInput.value = '';

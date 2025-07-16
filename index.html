@@ -122,48 +122,8 @@
     <section class="blog-section">
         <div class="section-content">
             <h2 class="section-title">Recent Blog Posts</h2>
-            <div class="recent-posts">
-                <a href="blog/intro-to-q-learning.html" class="post-card" data-post-id="1">
-                    <div class="post-card-header">
-                        <span class="post-category">Fundamentals</span>
-                        <span class="post-date">January 15, 2024</span>
-                    </div>
-                    <h3>Introduction to Q-Learning</h3>
-                    <p>A comprehensive introduction to Q-Learning, one of the fundamental algorithms in reinforcement learning. We'll explore the mathematical foundations and implement a simple example.</p>
-                    <div class="post-stats">
-                        <span><i class="far fa-heart"></i> <span class="like-count">0</span></span>
-                        <span><i class="far fa-comment"></i> <span class="comment-count">0</span></span>
-                        <span><i class="far fa-eye"></i> <span class="view-count">0</span></span>
-                    </div>
-                </a>
-
-                <div class="post-card" data-post-id="2">
-                    <div class="post-card-header">
-                        <span class="post-category">Deep Learning</span>
-                        <span class="post-date">January 8, 2024</span>
-                    </div>
-                    <h3>Deep Q-Networks (DQN) Explained</h3>
-                    <p>How neural networks revolutionized Q-Learning by enabling agents to learn directly from high-dimensional sensory inputs. We'll implement DQN from scratch.</p>
-                    <div class="post-stats">
-                        <span><i class="far fa-heart"></i> <span class="like-count">0</span></span>
-                        <span><i class="far fa-comment"></i> <span class="comment-count">0</span></span>
-                        <span><i class="far fa-eye"></i> <span class="view-count">0</span></span>
-                    </div>
-                </div>
-
-                <div class="post-card" data-post-id="3">
-                    <div class="post-card-header">
-                        <span class="post-category">Policy Methods</span>
-                        <span class="post-date">December 20, 2023</span>
-                    </div>
-                    <h3>Policy Gradient Methods: REINFORCE</h3>
-                    <p>Moving beyond value-based methods, we explore policy gradient algorithms that directly optimize the policy. Starting with the REINFORCE algorithm.</p>
-                    <div class="post-stats">
-                        <span><i class="far fa-heart"></i> <span class="like-count">0</span></span>
-                        <span><i class="far fa-comment"></i> <span class="comment-count">0</span></span>
-                        <span><i class="far fa-eye"></i> <span class="view-count">0</span></span>
-                    </div>
-                </div>
+            <div class="recent-posts" id="home-recent-posts">
+                <!-- Blog posts will be dynamically loaded here -->
             </div>
             <div class="blog-cta">
                 <a href="blog.html" class="btn-primary">View All Posts <i class="fas fa-arrow-right"></i></a>
@@ -179,5 +139,40 @@
 </footer>
 
 <script src="js/main.js"></script>
+<script>
+    // Load recent blog posts on home page
+    document.addEventListener('DOMContentLoaded', function() {
+        loadRecentBlogPosts();
+    });
+
+    function loadRecentBlogPosts() {
+        const container = document.getElementById('home-recent-posts');
+        const blogPosts = getBlogPosts();
+
+        // Show only the 3 most recent posts
+        const recentPosts = blogPosts.slice(0, 3);
+
+        if (recentPosts.length === 0) {
+            container.innerHTML = '<p style="text-align: center; color: var(--text-light);">No blog posts yet. Check back soon!</p>';
+            return;
+        }
+
+        container.innerHTML = recentPosts.map(post => `
+        <a href="${post.url}" class="post-card">
+            <div class="post-card-header">
+                <span class="post-category">${post.category}</span>
+                <span class="post-date">${post.date}</span>
+            </div>
+            <h3>${post.title}</h3>
+            <p>${post.excerpt}</p>
+            <div class="post-stats">
+                <span><i class="far fa-heart"></i> ${post.likes || 0}</span>
+                <span><i class="far fa-comment"></i> ${post.comments || 0}</span>
+                <span><i class="far fa-eye"></i> ${formatViewCount(post.views || 0)}</span>
+            </div>
+        </a>
+    `).join('');
+    }
+</script>
 </body>
 </html>
