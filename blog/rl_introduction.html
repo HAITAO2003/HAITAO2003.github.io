@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Introduction to Q-Learning - Haitao Wang</title>
+    <title>Introduction to Reinforcement Learning - Haitao Wang</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -27,10 +27,56 @@
             margin-bottom: 20px;
         }
 
+        .blog-post-content h3 {
+            font-size: 1.4rem;
+            color: var(--text-dark);
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        .blog-post-content h4 {
+            font-size: 1.2rem;
+            color: var(--text-dark);
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
         .blog-post-content p {
             margin-bottom: 20px;
             line-height: 1.8;
             color: var(--text-dark);
+        }
+
+        .blog-post-content ul {
+            margin: 20px 0;
+            padding-left: 30px;
+        }
+
+        .blog-post-content li {
+            margin-bottom: 10px;
+            line-height: 1.8;
+        }
+
+        .image-wrapper {
+            display: flex;
+        }
+
+        .blog-figure {
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .blog-figure img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .blog-figure figcaption {
+            margin-top: 10px;
+            font-style: italic;
+            color: var(--text-light);
         }
 
         pre {
@@ -126,22 +172,393 @@
 </header>
 
 <div class="container">
-    <article class="blog-post-content" data-post-id="1">
-        <h1>Introduction to Q-Learning</h1>
+    <article class="blog-post-content" data-post-id="3">
+        <h1>Chapter 0: Introduction to Reinforcement Learning - Fundamentals and Foundations</h1>
         <div class="blog-meta">
             <span><i class="far fa-calendar"></i> July 17, 2025</span>
             <span><i class="far fa-clock"></i> 9 min read</span>
             <span class="tag">introduction</span>
-            <span class="tag">Reinforcement Learning</span>
+            <span class="tag">reinforcement learning</span>
+            <span class="tag">fundamentals</span>
         </div>
 
+        <h2>1. Motivation for Studying Reinforcement Learning</h2>
+
+        <p>
+            The journey to build truly intelligent systems—machines that can learn, adapt, and make decisions
+            on their own—is one of the most exciting frontiers in technology. Unlike traditional programming, where every step is carefully hand-coded, reinforcement learning (RL) takes inspiration from
+            how humans and animals learn: through experience. It's about trial and error, exploration and
+            feedback—learning not by instruction, but by doing.
+        </p>
+
+        <p>
+            At its core, reinforcement learning is a beautiful shift in how we think about solving complex
+            problems. Imagine teaching a robot to walk, a drone to navigate obstacles, or an AI to play a game
+            without giving it any rules—just a goal. That's the magic of RL: give the system a reward signal,
+            and let it figure things out from there.
+        </p>
+
+        <figure class="blog-figure">
+            <img src="../src/chapter0/go.png" alt="AlphaGo victory">
+            <figcaption>AlphaGo's historic victory over Lee Sedol marked a breakthrough in AI</figcaption>
+        </figure>
+
+        <p>
+            One of the most famous examples of RL's power is AlphaGo, the AI that stunned the world
+            in 2016 by defeating the legendary Go champion Lee Sedol. Go isn't just a game—it's a universe
+            of possibilities, with more board configurations than atoms in the observable universe. Traditional
+            algorithms couldn't handle this scale. But by learning from self-play and improving over time,
+            AlphaGo developed strategies that no human had ever seen before. It was a breakthrough not just
+            in AI, but in how we understand learning itself.
+        </p>
+
+        <p>
+            What makes reinforcement learning so compelling is its flexibility. Whether you're optimizing
+            a stock portfolio, designing smarter robots, or personalizing online experiences, RL provides a
+            common mathematical framework for making decisions over time. In every case, the idea is the
+            same: an agent interacts with an environment, makes decisions, and learns from the consequences.
+        </p>
+
+        <p>
+            Unlike supervised learning, which relies on massive labeled datasets, reinforcement learning
+            thrives in situations where those labels don't exist. Instead of being told what to do, the agent
+            must discover what works by trying, failing, and trying again—just like we do when we learn a new
+            skill.
+        </p>
+
+        <p>
+            Under the hood, RL is grounded in rigorous mathematics. It offers theoretical guarantees
+            about learning and convergence—something many heuristic-based approaches lack. This theoretical
+            backbone gives researchers and engineers a principled way to design systems that not only work,
+            but work reliably and efficiently.
+        </p>
+
+        <p>
+            In this blog series, we'll explore the fascinating world of reinforcement learning—how it works,
+            why it matters, and where it's heading. Whether you're a curious newcomer or a seasoned practitioner, there's something exciting waiting in the world of agents, rewards, and learned behavior.
+        </p>
+
+        <h2>2. Introduction to Reinforcement Learning</h2>
+
+        <p>
+            Reinforcement learning represents a paradigm of machine learning concerned with how intelligent
+            agents ought to take actions in an environment to maximize cumulative reward. The framework
+            draws inspiration from behavioral psychology, where learning occurs through interaction with the
+            environment and adaptation based on received feedback.
+        </p>
+
+        <figure class="blog-figure">
+            <img src="../src/chapter0/rl.png" alt="RL Framework">
+            <figcaption>The fundamental reinforcement learning framework: Agent-Environment interaction</figcaption>
+        </figure>
+
+        <p>
+            At its core, reinforcement learning models the interaction between an agent and its environment
+            as a sequential decision-making process. The agent observes the current state of the environment,
+            selects an action based on its current policy, and receives both a reward signal and information
+            about the resulting new state. This cycle continues throughout the learning process, with the agent
+            gradually improving its decision-making strategy based on accumulated experience.
+        </p>
+
+        <p>The fundamental components of any reinforcement learning system include:</p>
+
+        <ul>
+            <li><strong>Agent</strong>: The learner or decision-maker that interacts with the environment</li>
+            <li><strong>Environment</strong>: Everything external to the agent that it can perceive and influence through actions</li>
+            <li><strong>State</strong>: A representation of the current situation or configuration of the environment</li>
+            <li><strong>Action</strong>: Choices available to the agent that can influence the environment</li>
+            <li><strong>Reward</strong>: Numerical feedback signal indicating the desirability of the agent's behavior</li>
+            <li><strong>Policy</strong>: The agent's strategy for selecting actions based on observed states</li>
+        </ul>
+
+        <p>
+            The learning process in reinforcement learning differs fundamentally from other machine learning paradigms. In supervised learning, algorithms learn from labeled examples that specify correct
+            outputs for given inputs. Unsupervised learning discovers hidden patterns in data without explicit
+            targets. Reinforcement learning, however, must balance exploration of unknown strategies with
+            exploitation of currently known good strategies, learning optimal behavior through trial and error.
+        </p>
+
+        <p>
+            The mathematical formulation of reinforcement learning typically assumes that the interaction
+            between agent and environment satisfies the Markov property: the probability of transitioning to
+            any future state depends only on the current state and action, not on the entire history of previous interactions. This assumption enables the use of powerful mathematical tools from dynamic
+            programming and stochastic processes while maintaining computational tractability.
+        </p>
+
+        <p>
+            The objective in reinforcement learning is to find an optimal policy—a mapping from states
+            to actions—that maximizes expected cumulative reward over time. This optimization problem
+            involves several challenges: the delayed nature of consequences (actions taken now may have effects
+            much later), the exploration-exploitation trade-off (learning requires trying new actions that may
+            be suboptimal), and the credit assignment problem (determining which actions were responsible
+            for eventual rewards).
+        </p>
+
+        <p>
+            Different reinforcement learning algorithms approach these challenges through various strategies. Model-based methods attempt to learn a model of the environment's dynamics and then
+            use this model for planning optimal actions. Model-free methods learn optimal policies or value
+            functions directly from experience without explicitly modeling environment dynamics. Actor-critic
+            methods combine elements of both approaches, maintaining both a policy (actor) and a value
+            function (critic) that work together to improve performance.
+        </p>
+
+        <h2>3. Real-Life Applications of Reinforcement Learning</h2>
+
+        <p>
+            The practical impact of reinforcement learning extends far beyond academic research, with successful applications transforming industries and enabling previously impossible capabilities. These
+            real-world deployments demonstrate both the power and the challenges of implementing RL systems
+            in complex, dynamic environments.
+        </p>
+
+        <h3>3.1 Autonomous Systems and Robotics</h3>
+
+        <figure class="blog-figure">
+            <img src="../src/chapter0/self_driving_car.png" alt="Autonomous Vehicle">
+            <figcaption>Autonomous vehicles use RL for navigation and decision-making in complex traffic scenarios</figcaption>
+        </figure>
+
+        <p>
+            Autonomous vehicle development represents one of the most visible applications of reinforcement
+            learning technology. Companies like Tesla, Waymo, and Uber employ RL algorithms for path planning, decision-making in complex traffic scenarios, and adaptive control systems. The challenge
+            involves learning optimal driving policies that must account for dynamic environments, unpredictable human behavior, and safety constraints. RL enables these systems to continuously improve
+            their performance based on experience while maintaining safety through careful reward design and
+            constraint satisfaction.
+        </p>
+
+        <p>
+            Robotic control systems leverage reinforcement learning for manipulation tasks that require
+            adaptation to varying conditions. Industrial robots use RL for precision assembly, where slight
+            variations in part dimensions or positioning require real-time adjustments. Household robots employ RL for navigation and task execution in unstructured environments. The key advantage lies
+            in RL's ability to learn robust policies that generalize across different conditions without requiring
+            explicit programming for every possible scenario.
+        </p>
+
+        <h3>3.2 Finance and Trading</h3>
+
+        <figure class="blog-figure">
+            <img src="../src/chapter0/finance.png" alt="rl in finance">
+            <figcaption>Modern recommendation systems use RL to personalize content delivery</figcaption>
+        </figure>
+        <p>
+            Algorithmic trading systems increasingly rely on reinforcement learning for portfolio optimization
+            and execution strategies. RL algorithms can learn optimal trading policies that adapt to changing
+            market conditions, account for transaction costs, and manage risk exposure. High-frequency trading
+            firms use RL for market making, where algorithms must learn optimal bid-ask spreads and inventory
+            management strategies in real-time.
+        </p>
+
+        <p>
+            Risk management applications employ RL for dynamic hedging strategies and asset allocation
+            decisions. These systems must balance potential returns against risk exposure while adapting to
+            evolving market conditions. The sequential nature of financial decision-making aligns naturally with
+            the RL framework, where each trading decision influences future opportunities and constraints.
+        </p>
+
+        <h3>3.3 Healthcare and Medical Treatment</h3>
+
+        <p>
+            Personalized medicine represents an emerging application area where RL algorithms optimize treatment protocols based on patient responses. Diabetes management systems use RL to learn optimal
+            insulin dosing strategies that account for individual patient characteristics, lifestyle factors, and glucose response patterns. Cancer treatment optimization employs RL for chemotherapy scheduling
+            that maximizes therapeutic effectiveness while minimizing adverse effects.
+        </p>
+
+        <p>
+            Drug discovery pipelines incorporate RL for molecular design, where algorithms learn to generate novel compounds with desired properties. These systems must navigate vast chemical spaces
+            while satisfying multiple constraints related to toxicity, solubility, and biological activity.
+        </p>
+
+        <h3>3.4 Technology and Digital Platforms</h3>
+
+
+        <p>
+            Recommendation systems at companies like Netflix, Amazon, and Spotify employ RL algorithms
+            to personalize content delivery. These systems must learn user preferences from implicit feedback
+            while balancing exploration of new content with exploitation of known preferences. The multi-armed bandit framework, a simplified version of RL, proves particularly effective for optimizing
+            click-through rates and user engagement.
+        </p>
+
+        <p>
+            Online advertising platforms use RL for real-time bidding and ad placement optimization. These
+            systems must learn optimal bidding strategies that maximize advertiser return on investment while
+            accounting for competition and user behavior patterns. The sequential nature of ad auctions and
+            the need for real-time decision-making make RL particularly suitable for these applications.
+        </p>
+
+        <h3>3.5 Gaming and Entertainment</h3>
+        <div class="image-wrapper">
+            <figure class="blog-figure">
+                <img src="../src/chapter0/starcraft.png" alt="alphastar">
+                <figcaption>AlphaStar beating best human players in StarCraft</figcaption>
+            </figure>
+
+            <figure class="blog-figure">
+                <img src="../src/chapter0/dota2.png" alt="deepmind">
+                <figcaption>Google Deepmind beating best Dota2 players</figcaption>
+            </figure>
+        </div>
+        <p>
+            The gaming industry has witnessed remarkable RL successes, from DeepMind's AlphaGo mastering
+            the game of Go to OpenAI Five competing at professional levels in Dota 2. These achievements
+            demonstrate RL's capability to discover novel strategies and achieve superhuman performance in
+            complex strategic environments.
+        </p>
+
+        <p>
+            Game development increasingly incorporates RL for creating adaptive non-player characters
+            (NPCs) that provide personalized challenge levels and engaging gameplay experiences. Procedural
+            content generation systems use RL to create game levels and scenarios that adapt to player skill
+            and preferences.
+        </p>
+
+        <h2>4. Structure of the Reinforcement Learning Fundamentals Blog Series</h2>
+
+        <p>
+            This comprehensive blog series provides a complete journey through reinforcement learning fundamentals, progressing from theoretical foundations to state-of-the-art algorithms and practical
+            implementation. The structure follows a carefully designed learning path that builds conceptual
+            understanding progressively while maintaining mathematical rigor and culminating in hands-on
+            implementation experience.
+        </p>
+
+        <h3>4.1 Chapter 1: Understanding MDPs and POMDPs</h3>
+
+        <p>
+            The series begins with Markov Decision Processes (MDPs), which provide the mathematical foundation for most reinforcement learning algorithms. We explore the formal definition of MDPs,
+            including state spaces, action spaces, transition dynamics, and reward structures. The chapter
+            develops intuition for the Markov property and its implications for learning and planning. The discussion extends to Partially Observable Markov Decision Processes (POMDPs), which model more
+            realistic scenarios where agents have incomplete information about their environment. We examine
+            the additional complexity introduced by partial observability, including belief state representations
+            and the challenges of state estimation.
+        </p>
+
+        <h3>4.2 Chapter 2: Exact Solution Methods - Value Iteration and Policy Iteration</h3>
+
+        <p>
+            Building on the MDP foundation, this chapter explores exact solution methods that provide optimal
+            policies when the environment dynamics are known. Value iteration and policy iteration represent
+            the classical dynamic programming approaches to solving MDPs with finite state-action space.
+        </p>
+
+        <h3>4.3 Chapter 3: Deep Double Q-Network (DDQN)</h3>
+
+        <p>
+            This chapter bridges classical RL methods with modern deep learning approaches. We begin
+            with the standard DQN algorithm, exploring how neural networks approximate Q-functions and
+            enable learning in high-dimensional state spaces. The evolution to Double DQN addresses the
+            overestimation bias inherent in standard Q-learning algorithms.
+        </p>
+
+        <h3>4.4 Chapter 4: Policy Gradient Methods and REINFORCE Algorithm</h3>
+
+        <p>
+            Moving beyond value-based methods, this chapter introduces policy gradient approaches that directly optimize the policy function. The REINFORCE algorithm serves as the foundation for
+            understanding how to compute gradients of expected returns with respect to policy parameters.
+            We explore the theoretical foundations of policy gradient methods, including the policy gradient
+            theorem and the variance reduction techniques that make these methods practical. The chapter
+            covers both the mathematical derivations and implementation details necessary for successful policy
+            gradient learning.
+        </p>
+
+        <h3>4.5 Chapter 5: Advantage Actor-Critic (A2C) and Proximal Policy Optimization (PPO)</h3>
+
+        <p>
+            This chapter advances policy gradient methods by introducing actor-critic architectures and modern
+            policy optimization techniques. A2C combines the benefits of both value-based and policy-based
+            methods, while PPO addresses the sample efficiency and stability challenges of policy gradient
+            methods.
+        </p>
+
+        <p>
+            You will also learn how critic networks can reduce variance in policy gradient estimates and
+            explore the clipped objective function that makes PPO robust to large policy updates. The chapter
+            provides comprehensive theoretical understanding of these models and discusses the design choices
+            that make these methods effective in practice.
+        </p>
+
+        <h3>4.6 Chapter 6: Deep Deterministic Policy Gradient (DDPG) and Soft Actor-Critic (SAC)</h3>
+
+        <p>
+            The focus shifts to continuous control problems and off-policy learning methods. DDPG extends
+            the DQN framework to continuous action spaces using the deterministic policy gradient theorem.
+            We will first introduce maximum entropy framework for reinforcement learning and how it's used
+            and implemented in SAC.
+        </p>
+
+        <h3>4.7 Chapter 7: Practical Implementation - Autonomous Car Racing with PPO and SAC</h3>
+
+        <figure class="blog-figure">
+            <img src="../src/chapter0/car_racing.png.png" alt="car racing">
+            <figcaption>Car racing Gymnasium</figcaption>
+        </figure>
+
+        <p>
+            The culminating chapter applies the learned algorithms to a concrete, engaging problem: training an
+            autonomous agent to play a car racing game. This hands-on implementation chapter demonstrates
+            the practical considerations involved in applying RL algorithms to real problems.
+        </p>
+
+        <p>
+            We implement both PPO and SAC agents from scratch, comparing their performance on the car
+            racing task. The chapter covers environment configuration using Gymnasium, network architecture
+            design, and training procedures. We also address common implementation challenges and debugging
+            strategies.
+        </p>
+
+        <h3>4.8 Optional Advanced Chapters: Stable Baselines3 Deep Dive</h3>
+
+        <p>
+            For readers interested in production-ready implementations and advanced algorithmic details, we
+            provide optional chapters that explore the Stable Baselines3 library implementations of the covered
+            algorithms. These chapters serve as bridges between theoretical understanding and industrial
+            application.
+        </p>
+
+        <p>The optional chapters cover:</p>
+
+        <ul>
+            <li>Optional Chapter A: Stable Baselines3 PPO Implementation Analysis</li>
+            <li>Optional Chapter B: Stable Baselines3 SAC Implementation Deep Dive</li>
+            <li>Optional Chapter D: Benchmarking and Evaluation Methodologies</li>
+        </ul>
+
+        <p>
+            These chapters examine implementation details such as vectorized environments, advanced normalization techniques, checkpoint management, and distributed training strategies. They provide
+            insights into the engineering considerations that make RL algorithms robust and scalable in practice.
+        </p>
+
+        <h3>4.9 Series Integration and Learning Objectives</h3>
+
+        <p>
+            The complete series progresses systematically from mathematical foundations through practical
+            implementation, ensuring that readers develop both theoretical understanding and practical skills.
+            The progression from exact methods to approximate solutions, from value-based to policy-based
+            methods, and from discrete to continuous control mirrors the historical development of reinforcement learning.
+        </p>
+
+        <p>Upon completing this series, readers will possess:</p>
+
+        <ul>
+            <li>Comprehensive theoretical understanding of RL mathematical foundations</li>
+            <li>Ability to formulate real-world problems as RL tasks</li>
+            <li>Implementation skills for both classical and modern RL algorithms</li>
+            <li>Understanding of when to apply different algorithmic approaches</li>
+            <li>Practical experience with debugging and optimizing RL systems</li>
+            <li>Knowledge of production-ready implementation techniques</li>
+            <li>Awareness of current research directions and open challenges</li>
+        </ul>
+
+        <p>
+            The hands-on car racing implementation serves as a capstone project that integrates all learned
+            concepts while providing engaging, visual feedback on algorithm performance. The optional Stable
+            Baselines3 chapters ensure that readers can transition smoothly to using professional-grade RL
+            libraries while understanding the underlying implementation details.
+        </p>
 
         <!-- Post actions bar -->
         <div class="post-actions-bar">
-            <button class="like-btn" onclick="toggleLike(1)">
+            <button class="like-btn" onclick="toggleLike(3)">
                 <i class="far fa-heart"></i> <span class="like-count">0</span>
             </button>
-            <button class="comment-btn" onclick="toggleComments(1)">
+            <button class="comment-btn" onclick="toggleComments(3)">
                 <i class="far fa-comment"></i> <span class="comment-count">0</span>
             </button>
             <span class="view-count"><i class="far fa-eye"></i> 0</span>
@@ -151,14 +568,14 @@
         </div>
 
         <!-- Comments Section -->
-        <div class="comments-section post-comment-section" id="comments-1">
+        <div class="comments-section post-comment-section" id="comments-3">
             <h3>Comments</h3>
             <div class="comment-form">
-                <input type="text" placeholder="Your name" class="comment-name" id="comment-name-1">
-                <textarea placeholder="Share your thoughts..." class="comment-text" id="comment-text-1"></textarea>
-                <button class="btn-primary" onclick="addComment(1)">Post Comment</button>
+                <input type="text" placeholder="Your name" class="comment-name" id="comment-name-3">
+                <textarea placeholder="Share your thoughts..." class="comment-text" id="comment-text-3"></textarea>
+                <button class="btn-primary" onclick="addComment(3)">Post Comment</button>
             </div>
-            <div class="comments-list" id="comments-list-1">
+            <div class="comments-list" id="comments-list-3">
                 <!-- Comments will be loaded here -->
             </div>
         </div>
@@ -171,7 +588,7 @@
 
 <footer>
     <div class="container">
-        <p>&copy; 2024 Haitao Wang. All rights reserved.</p>
+        <p>&copy; 2025 Haitao Wang. All rights reserved.</p>
     </div>
 </footer>
 
