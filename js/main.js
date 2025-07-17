@@ -13,19 +13,19 @@ const BLOG_POSTS_DATA = [
         readTime: 8,
         tags: ["q-learning", "basics"],
         excerpt: "A comprehensive introduction to Q-Learning, one of the fundamental algorithms in reinforcement learning. We'll explore the mathematical foundations, understand the Bellman equation, and implement a simple example using the OpenAI Gym environment. Perfect for beginners looking to understand value-based methods."
-    },
+    }
     // Add new blog posts here - they will automatically have 0 likes/comments/views
     // Example:
-    {
-         id: 2,
-         title: "Markov Decision Processes and Partially Observable Markov Decision Processes",
-         url: "blog/mdp-pomdp-intro.html",
-         category: "Theory",
-         date: "January 20, 2024",
-         readTime: 15,
-         tags: ["mdp", "pomdp", "theory"],
-         excerpt: "This introductory exploration of Markov Decision Processes and Partially Observable Markov Decision Processes establishes the theoretical foundation for understanding sequential decision-making under uncertainty."
-     }
+    // {
+    //     id: 2,
+    //     title: "Markov Decision Processes and Partially Observable Markov Decision Processes",
+    //     url: "blog/mdp-pomdp-intro.html",
+    //     category: "Theory",
+    //     date: "January 20, 2024",
+    //     readTime: 15,
+    //     tags: ["mdp", "pomdp", "theory"],
+    //     excerpt: "This introductory exploration of Markov Decision Processes and Partially Observable Markov Decision Processes establishes the theoretical foundation for understanding sequential decision-making under uncertainty."
+    // }
 ];
 
 // Blog state manager - Handles all blog statistics
@@ -206,9 +206,6 @@ class BlogStateManager {
     }
 }
 
-// Initialize blog state manager
-const blogStateManager = new BlogStateManager();
-
 // ==========================================
 // FORUM DATA MANAGEMENT
 // ==========================================
@@ -265,8 +262,6 @@ class ForumManager {
     }
 }
 
-const forumManager = new ForumManager();
-
 // ==========================================
 // UTILITY FUNCTIONS
 // ==========================================
@@ -283,39 +278,6 @@ function getBlogPosts() {
         };
     }).sort((a, b) => new Date(b.date) - new Date(a.date));
 }
-
-// ==========================================
-// PAGE INITIALIZATION
-// ==========================================
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Set active navigation
-    setActiveNavigation();
-
-    // Initialize page-specific functionality
-    const currentPath = window.location.pathname;
-
-    if (currentPath.includes('blog/') && !currentPath.endsWith('blog.html')) {
-        // Individual blog post page
-        initializeBlogPost();
-    } else if (currentPath.endsWith('forum.html')) {
-        // Forum page
-        initializeForum();
-    }
-
-    // Initialize KaTeX if available
-    if (typeof renderMathInElement !== 'undefined') {
-        renderMathInElement(document.body, {
-            delimiters: [
-                {left: '$$', right: '$$', display: true},
-                {left: '$', right: '$', display: false}
-            ]
-        });
-    }
-
-    // Add header scroll effect
-    initializeHeaderScroll();
-});
 
 function setActiveNavigation() {
     const currentLocation = location.pathname.split('/').pop() || 'index.html';
@@ -362,10 +324,10 @@ function initializeBlogPost() {
 }
 
 // ==========================================
-// BLOG INTERACTION FUNCTIONS
+// BLOG INTERACTION FUNCTIONS (Global for onclick handlers)
 // ==========================================
 
-function toggleLike(postId) {
+window.toggleLike = function(postId) {
     blogStateManager.toggleLike(postId);
 
     // Add animation
@@ -378,7 +340,7 @@ function toggleLike(postId) {
     }
 }
 
-function toggleComments(postId) {
+window.toggleComments = function(postId) {
     const commentsSection = document.getElementById(`comments-${postId}`);
 
     if (!commentsSection) return;
@@ -410,7 +372,7 @@ function loadCommentsForPost(postId) {
     `).join('') || '<p style="color: var(--text-light); text-align: center;">No comments yet. Be the first to comment!</p>';
 }
 
-function addComment(postId) {
+window.addComment = function(postId) {
     const nameInput = document.getElementById(`comment-name-${postId}`);
     const textInput = document.getElementById(`comment-text-${postId}`);
 
@@ -588,9 +550,11 @@ window.sharePost = function() {
 // HOME PAGE BLOG POSTS LOADER
 // ==========================================
 
-window.loadRecentBlogPosts = function() {
+function loadRecentBlogPosts() {
     const container = document.getElementById('home-recent-posts');
-    if (!container) return;
+    if (!container) {
+        return;
+    }
 
     const blogPosts = getBlogPosts();
     const recentPosts = blogPosts.slice(0, 3);
@@ -624,9 +588,11 @@ window.loadRecentBlogPosts = function() {
 // BLOG PAGE POSTS LOADER
 // ==========================================
 
-window.loadAllBlogPosts = function() {
+function loadAllBlogPosts() {
     const container = document.getElementById('blog-list-container');
-    if (!container) return;
+    if (!container) {
+        return;
+    }
 
     const blogPosts = getBlogPosts();
 
@@ -680,3 +646,51 @@ window.loadAllBlogPosts = function() {
         `;
     }).join('');
 }
+
+// ==========================================
+// INITIALIZATION
+// ==========================================
+
+// Initialize managers
+const blogStateManager = new BlogStateManager();
+const forumManager = new ForumManager();
+
+// ==========================================
+// PAGE INITIALIZATION
+// ==========================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Set active navigation
+    setActiveNavigation();
+
+    // Initialize page-specific functionality
+    const currentPath = window.location.pathname;
+    const currentFile = currentPath.split('/').pop();
+
+    if (currentFile === 'index.html' || currentFile === '' || currentPath === '/' || currentPath === '') {
+        // Home page - load recent posts
+        loadRecentBlogPosts();
+    } else if (currentFile === 'blog.html') {
+        // Blog page - load all posts
+        loadAllBlogPosts();
+    } else if (currentPath.includes('blog/') && !currentPath.endsWith('blog.html')) {
+        // Individual blog post page
+        initializeBlogPost();
+    } else if (currentFile === 'forum.html') {
+        // Forum page
+        initializeForum();
+    }
+
+    // Initialize KaTeX if available
+    if (typeof renderMathInElement !== 'undefined') {
+        renderMathInElement(document.body, {
+            delimiters: [
+                {left: '$$', right: '$$', display: true},
+                {left: '$', right: '$', display: false}
+            ]
+        });
+    }
+
+    // Add header scroll effect
+    initializeHeaderScroll();
+});
