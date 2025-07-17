@@ -4,28 +4,40 @@
 
 // Blog posts metadata - Single source of truth for blog post information
 const BLOG_POSTS_DATA = [
-    {
-        id: 1,
-        title: "Introduction to Q-Learning",
-        url: "blog/intro-to-q-learning.html",
-        category: "Fundamentals",
-        date: "January 15, 2024",
-        readTime: 8,
-        tags: ["q-learning", "basics"],
-        excerpt: "A comprehensive introduction to Q-Learning, one of the fundamental algorithms in reinforcement learning. We'll explore the mathematical foundations, understand the Bellman equation, and implement a simple example using the OpenAI Gym environment. Perfect for beginners looking to understand value-based methods."
-    },
-    // Add new blog posts here - they will automatically have 0 likes/comments/views
-    // Example:
      {
-         id: 2,
+        id: 0,
+        title: "Introduction to Reinforcement Learning",
+        url: "blog/rl_introduction.html",
+        category: "Introduction",
+        date: "July 17, 2025",
+        readTime: 15,
+        tags: ["introduction","application"],
+        excerpt: "In this blog series, we'll explore the fascinating world of reinforcement learning—how it works, why it matters, and where it's heading. ",
+     },
+
+     {
+         id: 1,
          title: "Markov Decision Processes and Partially Observable Markov Decision Processes",
          url: "blog/mdp-pomdp-intro.html",
          category: "Theory",
-         date: "January 20, 2024",
+         date: "July 17, 2025",
          readTime: 15,
          tags: ["mdp", "pomdp", "theory"],
          excerpt: "This introductory exploration of Markov Decision Processes and Partially Observable Markov Decision Processes establishes the theoretical foundation for understanding sequential decision-making under uncertainty."
-     }
+     },
+     {
+        id: 2,
+        title: "Exact MDP Solutions: Value Iteration and Policy Iteration",
+        url: "blog/value_and_policy_iteration.html",
+        category: "algorithm",
+        date: "July 17, 2025",
+        readTime: 15,
+        tags: ["mdp", "theory", "algorithm"],
+        excerpt: "In Chapter 1, we now turn our attention to the classical methods for solving MDPs when the environment dynamics are fully known, and the state-action space is finite and relatively small."
+     },
+
+
+
 ];
 
 // Blog state manager - Handles all blog statistics
