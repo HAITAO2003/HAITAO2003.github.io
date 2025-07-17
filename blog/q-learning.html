@@ -126,7 +126,7 @@
 </header>
 
 <div class="container">
-    <article class="blog-post-content" data-post-id="1">
+    <article class="blog-post-content" data-post-id="3">
         <h1>Introduction to Q-Learning</h1>
         <div class="blog-meta">
             <span><i class="far fa-calendar"></i> January 15, 2024</span>
@@ -175,10 +175,10 @@ class QLearningAgent:
 
         <!-- Post actions bar -->
         <div class="post-actions-bar">
-            <button class="like-btn" onclick="toggleLike(1)">
+            <button class="like-btn" onclick="toggleLike(3)">
                 <i class="far fa-heart"></i> <span class="like-count">0</span>
             </button>
-            <button class="comment-btn" onclick="toggleComments(1)">
+            <button class="comment-btn" onclick="toggleComments(3)">
                 <i class="far fa-comment"></i> <span class="comment-count">0</span>
             </button>
             <span class="view-count"><i class="far fa-eye"></i> 0</span>
@@ -193,7 +193,7 @@ class QLearningAgent:
             <div class="comment-form">
                 <input type="text" placeholder="Your name" class="comment-name" id="comment-name-1">
                 <textarea placeholder="Share your thoughts..." class="comment-text" id="comment-text-1"></textarea>
-                <button class="btn-primary" onclick="addComment(1)">Post Comment</button>
+                <button class="btn-primary" onclick="addComment(3)">Post Comment</button>
             </div>
             <div class="comments-list" id="comments-list-1">
                 <!-- Comments will be loaded here -->

@@ -35,7 +35,16 @@ const BLOG_POSTS_DATA = [
         tags: ["mdp", "theory", "algorithm"],
         excerpt: "In Chapter 1, we now turn our attention to the classical methods for solving MDPs when the environment dynamics are fully known, and the state-action space is finite and relatively small."
     },
-
+    {
+        id: 3,
+        title: "From Q-learning to DDQN",
+        url: "blog/q-learning.html",
+        category: "algorithm",
+        date: "July 17, 2025",
+        readTime: 15,
+        tags: ["theory", "model free", "algorithm", "offline RL"],
+        excerpt: " NOT YET POSTED"
+    },
 
 
 ];
