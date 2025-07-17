@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Introduction to Q-Learning - Haitao Wang</title>
+    <title>From Tabular Q-Learning to DQN - Haitao Wang</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -27,10 +27,82 @@
             margin-bottom: 20px;
         }
 
+        .blog-post-content h3 {
+            font-size: 1.4rem;
+            color: var(--text-dark);
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
         .blog-post-content p {
             margin-bottom: 20px;
             line-height: 1.8;
             color: var(--text-dark);
+        }
+
+        .blog-post-content ul {
+            margin: 20px 0;
+            padding-left: 30px;
+        }
+
+        .blog-post-content li {
+            margin-bottom: 10px;
+            line-height: 1.8;
+        }
+
+        .blog-post-content ol {
+            margin: 20px 0;
+            padding-left: 30px;
+        }
+
+        .blog-post-content ol li {
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+
+        .blog-figure {
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .blog-figure img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .blog-figure figcaption {
+            margin-top: 10px;
+            font-style: italic;
+            color: var(--text-light);
+        }
+
+        .algorithm-box {
+            background: var(--light-bg);
+            border-left: 4px solid var(--accent-color);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .math-block {
+            margin: 20px 0;
+            overflow-x: auto;
+            text-align: center;
+        }
+
+        .example-box {
+            background: var(--light-bg);
+            border-left: 4px solid var(--success-color);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .example-box h4 {
+            color: var(--success-color);
+            margin-bottom: 15px;
         }
 
         pre {
@@ -127,51 +199,397 @@
 
 <div class="container">
     <article class="blog-post-content" data-post-id="3">
-        <h1>Introduction to Q-Learning</h1>
+        <h1>Chapter 3: From Tabular Q-Learning to DQN</h1>
+        <p style="text-align: center; color: var(--text-light); font-style: italic; margin-bottom: 30px;">Model-Free Learning and Deep Reinforcement Learning</p>
+
         <div class="blog-meta">
-            <span><i class="far fa-calendar"></i> January 15, 2024</span>
-            <span><i class="far fa-clock"></i> 8 min read</span>
+            <span><i class="far fa-calendar"></i> July 18, 2025</span>
+            <span><i class="far fa-clock"></i> 20 min read</span>
             <span class="tag">q-learning</span>
-            <span class="tag">basics</span>
+            <span class="tag">dqn</span>
+            <span class="tag">model-free</span>
+        </div>
+
+        <h2>1. Introduction</h2>
+
+        <p>
+            In previous chapters, we explored exact solution methods like value iteration and policy iteration
+            that require complete knowledge of the environment dynamics. Today, we'll discuss a different
+            algorithm for solving MDPs called Q-learning, which represents a fundamental shift in approach:
+            from model-based to model-free learning. This transition enables agents to learn optimal policies
+            through direct interaction with the environment, without needing to know the underlying transition
+            probabilities or reward functions.
+        </p>
+
+        <p>
+            The journey from tabular Q-learning to Deep Q-Networks (DQN) represents one of the most significant
+            breakthroughs in reinforcement learning, enabling agents to tackle problems with continuous or
+            high-dimensional state spaces that were previously intractable.
+        </p>
+
+        <h2>Section 1: Tabular Q-Learning</h2>
+
+        <h3>2.1 From Value Iteration to Q-Learning</h3>
+
+        <p>
+            Let's first recall the Bellman update step in value iteration from Chapter 2:
+        </p>
+
+        <div class="math-block">
+            $$V_{k+1}(s) = \max_a \sum_{s'} P(s'|s,a)[R(s,a,s') + \gamma V_k(s')]$$
         </div>
 
         <p>
-            Q-Learning is one of the most fundamental algorithms in reinforcement learning. It's a model-free,
-            off-policy algorithm that learns the value of actions in states without requiring a model of the environment.
+            Here we assume full knowledge of the environment, including the transition probability function
+            $P(s'|s,a)$ and reward function $R(s,a,s')$, which make value iteration a model-based planning
+            algorithm. But what if we don't know the transition function and reward function? This is where
+            Q-learning comes in - a model-free algorithm where the agent is able to learn a good policy
+            through trial-and-error.
         </p>
 
-        <h2>The Q-Function</h2>
+        <h3>2.2 The Q-Function</h3>
+
         <p>
-            At the heart of Q-Learning is the action-value function, or Q-function, denoted as $Q(s, a)$.
-            This function represents the expected cumulative reward of taking action $a$ in state $s$ and then
-            following the optimal policy thereafter.
+            To understand Q-learning, first it's important to note that $Q(s,a)$ denotes the expected utility
+            of taking action $a$ at state $s$, where it differs from the value function in that $V(s)$ is only
+            a function of state $s$. Our goal is to learn the optimal Q-value function using the Bellman update,
+            which guarantees theoretical convergence:
         </p>
 
-        <p>The optimal Q-function satisfies the Bellman optimality equation:</p>
+        <div class="math-block">
+            $$Q_{k+1}(s,a) = \sum_{s'} P(s'|s,a)(R(s,a,s') + \gamma \max_{a'} Q_k(s',a'))$$
+        </div>
 
-        $$Q^*(s, a) = \mathbb{E}[r + \gamma \max_{a'} Q^*(s', a') | s, a]$$
+        <p>
+            Since we don't know the transition function, we can take expectations instead:
+        </p>
 
-        <p>where $r$ is the immediate reward, $\gamma$ is the discount factor, $s'$ is the next state, and $a'$ is the next action.</p>
+        <div class="math-block">
+            $$Q_{k+1}(s,a) = \mathbb{E}_{s' \sim P(s'|s,a)} \left[R(s,a,s') + \gamma \max_{a'} Q_k(s',a')\right]$$
+        </div>
 
-        <h2>Implementation Example</h2>
-        <pre><code>import numpy as np
+        <h3>2.3 Sampling and Temporal Difference Learning</h3>
 
-class QLearningAgent:
-    def __init__(self, n_states, n_actions, alpha=0.1, gamma=0.99, epsilon=0.1):
-        self.Q = np.zeros((n_states, n_actions))
-        self.alpha = alpha
-        self.gamma = gamma
-        self.epsilon = epsilon
+        <p>
+            To estimate the expectation, we use sampling. Suppose we sample action $a$ which leads to next
+            state $s' \sim P(s'|s,a)$. We can calculate the temporal difference (TD) target as:
+        </p>
 
-    def choose_action(self, state):
-        if np.random.random() < self.epsilon:
-            return np.random.randint(len(self.Q[state]))
-        else:
-            return np.argmax(self.Q[state])
+        <div class="math-block">
+            $$\text{target}(s') = R(s,a,s') + \gamma \max_{a'} Q_k(s',a')$$
+        </div>
 
-    def update(self, state, action, reward, next_state):
-        target = reward + self.gamma * np.max(self.Q[next_state])
-        self.Q[state, action] += self.alpha * (target - self.Q[state, action])</code></pre>
+        <p>
+            This represents a sample-based estimate of what the Q-value should be. For more stable updates,
+            we update the Q-value using a running average:
+        </p>
+
+        <div class="math-block">
+            $$Q_{k+1}(s,a) = (1-\alpha)Q_k(s,a) + \alpha \cdot \text{target}(s')$$
+        </div>
+
+        <p>
+            Which can be rewritten as:
+        </p>
+
+        <div class="math-block">
+            $$Q_{k+1}(s,a) = Q_k(s,a) + \alpha[R(s,a,s') + \gamma \max_{a'} Q_k(s',a') - Q_k(s,a)]$$
+        </div>
+
+        <p>
+            This step is called the <strong>TD update</strong>, where $\alpha$ is the learning rate that
+            controls how much we update the Q-value based on the new sample.
+        </p>
+
+        <h3>2.4 Exploration vs. Exploitation</h3>
+
+        <p>
+            Some people might ask: how do we sample action?
+        </p>
+
+        <p>
+            This question strikes the heart of Exploration-Exploitation trade-off. We want to be
+            able to exploit learnt policy while ensuring sufficient exploration of potentially better policies.
+        </p>
+
+        <p>
+            In both Q-learning and Deep Q-Networks (DQN), we use <strong>ε-greedy exploration</strong>
+            strategy:
+        </p>
+
+        <ul>
+            <li>choose random action with prob $\epsilon$, otherwise choose action greedily.</li>
+        </ul>
+
+        <div class="algorithm-box">
+            <p><strong>Tabular Q-Learning Algorithm:</strong></p>
+            <ol>
+                <li>Initialize Q-table $Q(s,a)$ arbitrarily (often to zeros)</li>
+                <li>For each episode:
+                    <ul>
+                        <li>Initialize state $s$</li>
+                        <li>Repeat for each step of episode:
+                            <ul>
+                                <li>Choose action $a$ using ε-greedy policy derived from $Q$</li>
+                                <li>Take action $a$, observe reward $r$ and next state $s'$</li>
+                                <li>Update: $Q(s,a) \leftarrow Q(s,a) + \alpha[r + \gamma \max_{a'} Q(s',a') - Q(s,a)]$</li>
+                                <li>$s \leftarrow s'$</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+
+        <h3>2.5 Amazing Facts about Q-Learning</h3>
+
+        <ul>
+            <li>It is an <strong>off-policy algorithm</strong></li>
+            <li>Q-learning will eventually converge to optimal policy with enough exploration</li>
+        </ul>
+
+        <h2>Section 2: Deep Q Networks (DQN)</h2>
+
+        <h3>3.1 Why Deep Q Networks?</h3>
+
+        <p>
+            The reason Q-learning introduced in previous section is called tabular Q-learning
+            is because we implement the algorithm by maintaining a $|S| \times |A|$ sized Q-table,
+            where each cells of the table $Q(s,a)$ is iteratively updated. This solution scales when
+            there are infinitely many states or actions possible. For example, if you want to build
+            an RL agent can trade stock automatically, there are infinitely many potential prices for
+            the stock, and there are infinitely many positions the AI agent can take on.
+        </p>
+
+        <p>
+            In this case, obviously tabular Q-learning becomes impossible, when either the state space $S$
+            or action space $A$ becomes a continuous space. This is where deep neural networks come into play,
+            hence aptly named DRL.
+        </p>
+
+        <h3>3.2 Function Approximation with Neural Networks</h3>
+
+        <p>
+            Instead of maintaining a Q-table, we can use a neural network with parameters $\theta$ to
+            approximate the Q-function:
+        </p>
+
+        <div class="math-block">
+            $$Q(s,a;\theta) \approx Q^*(s,a)$$
+        </div>
+
+        <p>
+            Recall the TD-update formula from tabular Q-learning:
+        </p>
+
+        <div class="math-block">
+            $$Q_{k+1}(s,a) = Q_k(s,a) + \alpha[\text{target}(s') - Q_k(s,a)]$$
+        </div>
+
+        <p>
+            When using neural networks, we update the parameters $\theta$ by performing gradient
+            descent on the TD error:
+        </p>
+
+        <div class="math-block">
+            $$\theta_{k+1} = \theta_k - \alpha \nabla_\theta \left[\frac{1}{2}(Q_k(s,a;\theta_k) - \text{target}(s'))^2\right]$$
+        </div>
+
+        <p>
+            Here, $\alpha$ effectively becomes the learning rate, and we are updating $Q(s,a;\theta)$
+            using the label $\text{target}(s')$ like in supervised learning.
+        </p>
+
+        <h3>3.3 Deep Q-Network Architecture</h3>
+
+        <div class="example-box">
+            <h4>Example: DQN for Atari Games</h4>
+            <p>
+                In the landmark DQN paper by Mnih et al. (2015), the network takes as input the last
+                4 frames of the game (84×84 grayscale images) and outputs Q-values for each possible
+                action. The architecture consists of:
+            </p>
+            <ul>
+                <li>3 convolutional layers for feature extraction</li>
+                <li>2 fully connected layers</li>
+                <li>Output layer with one neuron per action</li>
+            </ul>
+        </div>
+
+        <h2>Section 3: Dealing DQN</h2>
+
+        <p>
+            When updating $\theta$, the supervised learning target is not a constant value,
+            as it also requires $\theta$ to calculate $\text{target}(s')$. This creates training instability since
+            it's like chasing a moving target.
+        </p>
+
+        <p>
+            We can mitigate this problem by keeping a separate target network $\theta'$ where we can
+            either update periodically by copying $\theta$ (also call hard update) or by using running average
+            $\theta' = \tau\theta + (1-\tau)\theta'$ (also called soft update).
+        </p>
+
+        <h2>3. Dealing DQN</h2>
+
+        <p>
+            When updating $\theta$, the supervised learning target is not a constant value,
+            as it also requires $\theta$ to calculate $\text{target}(s')$. This creates training instability since
+            it's like chasing a moving target.
+        </p>
+
+        <p>
+            We can mitigate this problem by keeping a separate target network $\theta'$ where we can
+            either update periodically by copying $\theta$ (also call hard update) or by using running average
+            $\theta' = \tau\theta + (1-\tau)\theta'$ (also called soft update).
+        </p>
+
+        <h2>4. Additional Key Concepts in DQN</h2>
+
+        <h3>4.1 Experience Replay</h3>
+
+        <p>
+            Another crucial innovation in DQN is experience replay. Instead of learning from transitions
+            in the order they occur, we:
+        </p>
+
+        <ol>
+            <li>Store transitions $(s, a, r, s', \text{done})$ in a replay buffer</li>
+            <li>Sample random mini-batches from this buffer for training</li>
+            <li>This breaks correlations between consecutive samples and improves stability</li>
+        </ol>
+
+        <div class="algorithm-box">
+            <p><strong>DQN Algorithm with Experience Replay and Target Network:</strong></p>
+            <pre><code>Initialize replay memory D with capacity N
+Initialize action-value function Q with random weights θ
+Initialize target action-value function Q̂ with weights θ⁻ = θ
+
+For episode = 1 to M:
+    Initialize state s₁
+    For t = 1 to T:
+        With probability ε select random action aₜ
+        Otherwise select aₜ = argmax_a Q(sₜ, a; θ)
+
+        Execute action aₜ and observe reward rₜ and next state sₜ₊₁
+        Store transition (sₜ, aₜ, rₜ, sₜ₊₁) in D
+
+        Sample random minibatch of transitions from D
+        For each transition (sⱼ, aⱼ, rⱼ, sⱼ₊₁):
+            Set yⱼ = rⱼ + γ max_a' Q̂(sⱼ₊₁, a'; θ⁻)
+
+        Perform gradient descent step on (yⱼ - Q(sⱼ, aⱼ; θ))²
+
+        Every C steps reset Q̂ = Q</code></pre>
+        </div>
+
+        <h3>4.2 Convergence Properties</h3>
+
+        <p>
+            While tabular Q-learning has strong convergence guarantees under certain conditions
+            (visiting all state-action pairs infinitely often, appropriate learning rate decay),
+            DQN's convergence is more complex due to:
+        </p>
+
+        <ul>
+            <li>Function approximation errors</li>
+            <li>Non-stationary targets during training</li>
+            <li>Correlation between samples</li>
+        </ul>
+
+        <p>
+            The target network and experience replay help address these issues, but DQN may still
+            diverge in some cases. This motivates further improvements like Double DQN, Dueling DQN,
+            and Rainbow DQN.
+        </p>
+
+        <h2>5. Comparison: Tabular Q-Learning vs DQN</h2>
+
+        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+            <tr style="background: var(--light-bg);">
+                <th style="padding: 15px; text-align: left; border: 1px solid var(--border-color);">Aspect</th>
+                <th style="padding: 15px; text-align: left; border: 1px solid var(--border-color);">Tabular Q-Learning</th>
+                <th style="padding: 15px; text-align: left; border: 1px solid var(--border-color);">Deep Q-Network (DQN)</th>
+            </tr>
+            <tr>
+                <td style="padding: 15px; border: 1px solid var(--border-color);"><strong>State Space</strong></td>
+                <td style="padding: 15px; border: 1px solid var(--border-color);">Finite, discrete</td>
+                <td style="padding: 15px; border: 1px solid var(--border-color);">Continuous or high-dimensional</td>
+            </tr>
+            <tr>
+                <td style="padding: 15px; border: 1px solid var(--border-color);"><strong>Storage</strong></td>
+                <td style="padding: 15px; border: 1px solid var(--border-color);">$|S| \times |A|$ table</td>
+                <td style="padding: 15px; border: 1px solid var(--border-color);">Neural network parameters</td>
+            </tr>
+            <tr>
+                <td style="padding: 15px; border: 1px solid var(--border-color);"><strong>Update Rule</strong></td>
+                <td style="padding: 15px; border: 1px solid var(--border-color);">Direct TD update</td>
+                <td style="padding: 15px; border: 1px solid var(--border-color);">Gradient descent on TD error</td>
+            </tr>
+            <tr>
+                <td style="padding: 15px; border: 1px solid var(--border-color);"><strong>Convergence</strong></td>
+                <td style="padding: 15px; border: 1px solid var(--border-color);">Guaranteed under conditions</td>
+                <td style="padding: 15px; border: 1px solid var(--border-color);">No guarantee, but stable with tricks</td>
+            </tr>
+            <tr>
+                <td style="padding: 15px; border: 1px solid var(--border-color);"><strong>Generalization</strong></td>
+                <td style="padding: 15px; border: 1px solid var(--border-color);">No generalization</td>
+                <td style="padding: 15px; border: 1px solid var(--border-color);">Generalizes across similar states</td>
+            </tr>
+        </table>
+
+        <h2>6. Practical Implementation Tips</h2>
+
+        <p>
+            When implementing Q-learning or DQN, consider these practical tips:
+        </p>
+
+        <ol>
+            <li><strong>Reward scaling:</strong> Normalize or clip rewards to prevent gradient explosion</li>
+            <li><strong>Exploration schedule:</strong> Decay ε over time from high (e.g., 1.0) to low (e.g., 0.01)</li>
+            <li><strong>Network architecture:</strong> Start simple; add complexity only if needed</li>
+            <li><strong>Hyperparameter tuning:</strong> Learning rate, batch size, and update frequency are crucial</li>
+            <li><strong>Debugging:</strong> Monitor Q-values, loss, and episode returns during training</li>
+        </ol>
+
+        <h2>7. Conclusion</h2>
+
+        <p>
+            In this chapter, we've journeyed from the foundational tabular Q-learning algorithm to
+            the revolutionary Deep Q-Networks that enabled reinforcement learning to tackle complex,
+            high-dimensional problems. The transition from table-based to neural network-based
+            value function approximation represents a crucial milestone in the field of reinforcement
+            learning.
+        </p>
+
+        <p>
+            Q-learning's model-free nature makes it particularly powerful for real-world applications
+            where environment dynamics are unknown or too complex to model. By learning directly from
+            experience, Q-learning agents can discover optimal policies through trial and error, making
+            it applicable to a wide range of problems from game playing to robotics.
+        </p>
+
+        <p>
+            The introduction of deep neural networks to approximate Q-functions opened up entirely new
+            possibilities. DQN's success on Atari games demonstrated that RL agents could learn directly
+            from raw pixel inputs, achieving superhuman performance on many games. The key innovations
+            of experience replay and target networks addressed fundamental stability issues in combining
+            neural networks with temporal difference learning.
+        </p>
+
+        <p>
+            However, DQN is just the beginning of deep reinforcement learning. In the next chapter,
+            we'll explore Double DQN and other variants that address some of DQN's limitations, such
+            as overestimation bias. We'll also see how these value-based methods compare to the
+            policy gradient methods that we'll study in subsequent chapters.
+        </p>
+
+        <p>
+            The principles learned in this chapter - temporal difference learning, function approximation,
+            and the techniques for stabilizing deep RL training - form the foundation for understanding
+            modern deep reinforcement learning algorithms. As we progress through this series, you'll
+            see these concepts repeatedly applied and extended in increasingly sophisticated ways.
+        </p>
 
         <!-- Post actions bar -->
         <div class="post-actions-bar">
@@ -188,14 +606,14 @@ class QLearningAgent:
         </div>
 
         <!-- Comments Section -->
-        <div class="comments-section post-comment-section" id="comments-1">
+        <div class="comments-section post-comment-section" id="comments-3">
             <h3>Comments</h3>
             <div class="comment-form">
-                <input type="text" placeholder="Your name" class="comment-name" id="comment-name-1">
-                <textarea placeholder="Share your thoughts..." class="comment-text" id="comment-text-1"></textarea>
+                <input type="text" placeholder="Your name" class="comment-name" id="comment-name-3">
+                <textarea placeholder="Share your thoughts..." class="comment-text" id="comment-text-3"></textarea>
                 <button class="btn-primary" onclick="addComment(3)">Post Comment</button>
             </div>
-            <div class="comments-list" id="comments-list-1">
+            <div class="comments-list" id="comments-list-3">
                 <!-- Comments will be loaded here -->
             </div>
         </div>
@@ -208,7 +626,7 @@ class QLearningAgent:
 
 <footer>
     <div class="container">
-        <p>&copy; 2024 Haitao Wang. All rights reserved.</p>
+        <p>&copy; 2025 Haitao Wang. All rights reserved.</p>
     </div>
 </footer>
 
