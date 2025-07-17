@@ -416,7 +416,7 @@
             </ul>
         </div>
 
-        <h2>Section 3: Dealing DQN</h2>
+        <h2>Section 3: Double DQN</h2>
 
         <p>
             When updating $\theta$, the supervised learning target is not a constant value,
@@ -430,7 +430,7 @@
             $\theta' = \tau\theta + (1-\tau)\theta'$ (also called soft update).
         </p>
 
-        <h2>3. Dealing DQN</h2>
+        <h2>3. Double DQN</h2>
 
         <p>
             When updating $\theta$, the supervised learning target is not a constant value,
@@ -488,19 +488,8 @@ For episode = 1 to M:
         <p>
             While tabular Q-learning has strong convergence guarantees under certain conditions
             (visiting all state-action pairs infinitely often, appropriate learning rate decay),
-            DQN's convergence is more complex due to:
-        </p>
-
-        <ul>
-            <li>Function approximation errors</li>
-            <li>Non-stationary targets during training</li>
-            <li>Correlation between samples</li>
-        </ul>
-
-        <p>
-            The target network and experience replay help address these issues, but DQN may still
-            diverge in some cases. This motivates further improvements like Double DQN, Dueling DQN,
-            and Rainbow DQN.
+            DQN's convergence is more complex due to various reasons such as Function approximation errors and
+            Non-stationary targets during training
         </p>
 
         <h2>5. Comparison: Tabular Q-Learning vs DQN</h2>
@@ -538,21 +527,7 @@ For episode = 1 to M:
             </tr>
         </table>
 
-        <h2>6. Practical Implementation Tips</h2>
-
-        <p>
-            When implementing Q-learning or DQN, consider these practical tips:
-        </p>
-
-        <ol>
-            <li><strong>Reward scaling:</strong> Normalize or clip rewards to prevent gradient explosion</li>
-            <li><strong>Exploration schedule:</strong> Decay ε over time from high (e.g., 1.0) to low (e.g., 0.01)</li>
-            <li><strong>Network architecture:</strong> Start simple; add complexity only if needed</li>
-            <li><strong>Hyperparameter tuning:</strong> Learning rate, batch size, and update frequency are crucial</li>
-            <li><strong>Debugging:</strong> Monitor Q-values, loss, and episode returns during training</li>
-        </ol>
-
-        <h2>7. Conclusion</h2>
+        <h2>6. Conclusion</h2>
 
         <p>
             In this chapter, we've journeyed from the foundational tabular Q-learning algorithm to

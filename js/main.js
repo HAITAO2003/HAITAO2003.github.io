@@ -43,7 +43,7 @@ const BLOG_POSTS_DATA = [
         date: "July 17, 2025",
         readTime: 15,
         tags: ["theory", "model free", "algorithm", "offline RL"],
-        excerpt: " NOT YET POSTED"
+        excerpt: " Today, we'll discuss a different algorithm for solving MDPs called Q-learning, which represents a fundamental shift in approach: from model-based to model-free learning"
     },
 
 
