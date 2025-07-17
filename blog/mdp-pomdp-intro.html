@@ -123,7 +123,7 @@
         <h1>Chapter 1: Markov Decision Processes and Partially Observable Markov Decision Processes</h1>
 
         <div class="blog-meta">
-            <span><i class="far fa-calendar"></i> January 20, 2024</span>
+            <span><i class="far fa-calendar"></i> July 16, 2025</span>
             <span><i class="far fa-clock"></i> 15 min read</span>
             <span class="tag">mdp</span>
             <span class="tag">pomdp</span>
@@ -134,7 +134,7 @@
 
         <p>
             Reinforcement learning (RL) has emerged as one of the most compelling paradigms in artificial intelligence,
-            with applications spanning from RL agents that surpass human expertise in complicated games such as Go,
+            with applications spanning from RL agents that surpass human expertise in complex games such as Go,
             Dota 2 and StarCraft, to excelling in real life applications such as autonomous driving and robotics.
         </p>
 
@@ -151,15 +151,14 @@
 
         <p>
             Understanding these frameworks is essential for anyone seeking to apply reinforcement learning effectively.
-            The mathematical rigor of MDPs and POMDPs provides the theoretical foundation necessary to design algorithms,
-            prove convergence guarantees, and understand fundamental limitations. Moreover, the conceptual clarity gained
-            from studying these frameworks enables RL practitioners to identify which real-world problems are amenable
-            to RL solutions and how to formulate them appropriately.
+            MDP and POMDP provides the theoretical framework necessary to design algorithms,
+            prove convergence, and understand fundamental limitations. Moreover, the conceptual clarity gained
+            from studying these frameworks enables AI practitioners to appropriately formulate real-world problems using RL solutions.
         </p>
 
         <p>
-            The motivation for studying these frameworks stems from their mathematical elegance that captures the
-            essential structure of sequential decision-making problems while remaining computationally tractable.
+            Personally I believe the motivation for studying these frameworks should stem from their mathematical elegance
+            that effectively captures the essential structure of sequential decision-making problems under stochastic environment.
             Consider an autonomous driving system navigating through traffic, a robotic arm performing precision
             manufacturing tasks, or a trading algorithm making sequential investment decisions. Each of these scenarios
             involves an agent that must make decisions sequentially over time, where each decision influences future
@@ -208,8 +207,8 @@
 
                 <li><strong>Transition Function (T):</strong> Defines the dynamic and physics model of the world.
                     For example, if the car accelerates on a straight segment of the track, in a stochastic environment,
-                    $T$ assigns a high probability to an increase in forward velocity, but also allows for small
-                    variations in position due to tire slip or engine noise.</li>
+                    $T$ may assign high probability to an increase in forward velocity, but also allows for small
+                    variations in position due to tire slip.</li>
 
                 <li><strong>Reward Function (R):</strong>
                     <ul style="list-style-type: none; padding-left: 20px;">
@@ -230,9 +229,9 @@
         </div>
 
         <p>
-            This MDP formulation enables the agent to learn optimal racing strategies by balancing short-term
-            speed rewards with long-term objectives like race completion and avoiding crashes through
-            trial-and-error interaction with the environment.
+            This MDP formulation enables the agent to learn optimal racing strategies through interacting with the environment,
+            the interaction is represented as a sequence of transitions (state, action, next_state, reward). The agent will eventually
+            learn to balance short-term speed rewards with long-term objectives like race completion and avoiding crashes
         </p>
 
         <h3>2.2 Optimization Objective</h3>
@@ -274,7 +273,7 @@
         </div>
 
         <p>
-            While this assumption enables computational tractability and a well defined decision process,
+            While this assumption enables computational tractability and a well-defined decision process,
             it may not hold in many real life scenarios where recent historical transitions or states are
             also important or when the environment is not fully observable.
         </p>
@@ -282,7 +281,7 @@
         <p>
             These constraints naturally motivate the transition to more sophisticated frameworks, particularly
             when dealing with partially observable environments where agents must make decisions based on
-            incomplete information.
+            incomplete information about the environment.
         </p>
 
         <h2>3. Partially Observable Markov Decision Processes</h2>
@@ -294,9 +293,7 @@
             limitation of assuming complete state observability. In most real-world scenarios, agents operate
             with incomplete information about their environment. A robot navigating an unknown building cannot
             simultaneously observe all rooms, an autonomous vehicle has limited sensor range, and a trading
-            algorithm cannot access all market information simultaneously. However, the stochastic domain
-            introduces additional complexity, as observations themselves may be noisy or unreliable, further
-            complicating the decision-making process.
+            algorithm cannot access all market information simultaneously.
         </p>
 
         <h3>3.2 Formal Definition</h3>
@@ -321,14 +318,14 @@
 
         <p>
             <strong>Note:</strong> it is important to distinguish $S$ from $\Omega$. The state represents
-            the true state of the world, whereas observations represent the partially observable information
+            the actual state of the world, whereas observations represent the partially observable information
             of the actual state.
         </p>
 
         <h3>3.3 Problem Structure and Key Concepts</h3>
 
         <p>
-            We decompose the problem of controlling a POMDP into two parts, as shown in the figure above.
+            We decompose the problem of controlling a POMDP into two parts, as shown in the figure 2.
             The agent makes observations and generates actions. It keeps an internal belief state, $b$, that
             summarizes its previous experience. The component labeled SE is the state estimator: it is
             responsible for updating the belief state based on the last action, the current observation,
@@ -387,7 +384,7 @@
             The algorithms that will be introduced in the remaining chapters of the blog series all assume
             MDP environment. The reason being many problems that are fundamentally partially observable can
             still be effectively addressed using MDP algorithms, albeit sometimes with degraded performance
-            compared to methods that explicitly account for partial observability. Many foundational RL
+            compared to methods that explicitly account for partial observability. Most foundational RL
             algorithms were designed for MDP environment. However, many modern state-of-the-art model-based
             RL algorithms such as Dreamer series and TD-MPC2 that have achieved SOTA performance in complex
             continuous control tasks all assume POMDP environment.
