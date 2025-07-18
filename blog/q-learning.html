@@ -460,27 +460,10 @@
         </ol>
 
         <div class="algorithm-box">
-            <p><strong>DQN Algorithm with Experience Replay and Target Network:</strong></p>
-            <pre><code>Initialize replay memory D with capacity N
-Initialize action-value function Q with random weights θ
-Initialize target action-value function Q̂ with weights θ⁻ = θ
-
-For episode = 1 to M:
-    Initialize state s₁
-    For t = 1 to T:
-        With probability ε select random action aₜ
-        Otherwise select aₜ = argmax_a Q(sₜ, a; θ)
-
-        Execute action aₜ and observe reward rₜ and next state sₜ₊₁
-        Store transition (sₜ, aₜ, rₜ, sₜ₊₁) in D
-
-        Sample random minibatch of transitions from D
-        For each transition (sⱼ, aⱼ, rⱼ, sⱼ₊₁):
-            Set yⱼ = rⱼ + γ max_a' Q̂(sⱼ₊₁, a'; θ⁻)
-
-        Perform gradient descent step on (yⱼ - Q(sⱼ, aⱼ; θ))²
-
-        Every C steps reset Q̂ = Q</code></pre>
+            <figure class="blog-figure">
+                <img src="../src/chapter3/dqn.png" alt="dqn">
+                <figcaption>DQN pseudocode by Google DeepMind </figcaption>
+            </figure>
         </div>
 
         <h3>4.2 Convergence Properties</h3>
