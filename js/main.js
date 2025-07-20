@@ -47,7 +47,7 @@ const BLOG_POSTS_DATA = [
     },
     {
         id: 4,
-        title: "Everything you need to know about Policy Gradient, REINFORCE and Actor-Critic",
+        title: "Everything you need to know about Policy Gradient, REINFORCE and Advantage Actor-Critic (A2C)",
         url: "blog/policy_gradient.html",
         category: "algorithm",
         date: "July 17, 2025",
