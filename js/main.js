@@ -42,8 +42,20 @@ const BLOG_POSTS_DATA = [
         category: "algorithm",
         date: "July 17, 2025",
         readTime: 15,
-        tags: ["theory", "model free", "algorithm", "offline RL"],
+        tags: ["theory", "model free", "algorithm"],
         excerpt: " Today, we'll discuss a different algorithm for solving MDPs called Q-learning, which represents a fundamental shift in approach: from model-based to model-free learning"
+    },
+    {
+        id: 4,
+        title: "Everything you need to know about Policy Gradient, REINFORCE and Actor-Critic",
+        url: "blog/policy_gradient.html",
+        category: "algorithm",
+        date: "July 17, 2025",
+        readTime: 15,
+        tags: ["theory", "model free", "algorithm", "policy gradient", "GAE"],
+        excerpt: "In this chapter, we will first learn how to derive policy gradient used in\n" +
+            "            REINFORCE and all policy gradient based RL algorithms, and then introduce the\n" +
+            "            vanilla policy gradient algorithm with baseline estimation (A2C)."
     },
 
 

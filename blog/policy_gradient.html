@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Everything you need to know about Policy Gradient, REINFORCE and Actor-Critic - Haitao Wang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .blog-post-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .blog-post-content h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .blog-post-content h2 {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+
+        .blog-post-content h3 {
+            font-size: 1.4rem;
+            color: var(--text-dark);
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        .blog-post-content p {
+            margin-bottom: 20px;
+            line-height: 1.8;
+            color: var(--text-dark);
+        }
+
+        .blog-post-content ul, .blog-post-content ol {
+            margin: 20px 0;
+            padding-left: 30px;
+        }
+
+        .blog-post-content li {
+            margin-bottom: 10px;
+            line-height: 1.8;
+        }
+
+        pre {
+            background: var(--light-bg);
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        code {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .algorithm-box {
+            background: var(--light-bg);
+            border-left: 4px solid var(--accent-color);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .blog-figure {
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .blog-figure img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .blog-figure figcaption {
+            margin-top: 10px;
+            font-style: italic;
+            color: var(--text-light);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: 40px;
+            transition: gap 0.3s ease;
+        }
+
+        .back-link:hover {
+            gap: 10px;
+        }
+
+        .post-actions-bar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 50px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 40px 0;
+            border: 1px solid var(--border-color);
+        }
+
+        .post-actions-bar .like-btn,
+        .post-actions-bar .comment-btn,
+        .post-actions-bar .share-btn {
+            background: none;
+            border: none;
+            color: var(--text-dark);
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .post-actions-bar .like-btn:hover,
+        .post-actions-bar .comment-btn:hover,
+        .post-actions-bar .share-btn:hover {
+            background: var(--light-bg);
+            color: var(--accent-color);
+        }
+
+        .post-actions-bar .like-btn.liked {
+            color: var(--danger-color);
+        }
+
+        .post-comment-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .math-block {
+            margin: 20px 0;
+            overflow-x: auto;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="container">
+        <nav>
+            <a href="../index.html" class="nav-logo">Haitao Wang</a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="../blog.html">Blog</a>
+                <a href="../projects.html">Projects</a>
+                <a href="../resources.html">Resources</a>
+                <a href="../forum.html">Forum</a>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<div class="container">
+    <article class="blog-post-content" data-post-id="4">
+        <h1>Chapter 4: Policy Gradient Methods and REINFORCE Algorithm</h1>
+        <div class="blog-meta">
+            <span><i class="far fa-calendar"></i> January 22, 2024</span>
+            <span><i class="far fa-clock"></i> 12 min read</span>
+            <span class="tag">policy-gradient</span>
+            <span class="tag">reinforce</span>
+            <span class="tag">model-free</span>
+        </div>
+
+        <h2>Introduction</h2>
+        <p>
+            REINFORCE was one of the first algorithms to directly optimize policy parameters
+            using gradient descent, making it a cornerstone of modern policy-based RL algorithms.
+            Unlike DQN which relies on Q-function and implicitly learns a greedy policy
+            $\pi(s) = \arg\max_a Q(s,a)$, REINFORCE learns the policy directly by estimating
+            gradients of expected returns. Additionally, REINFORCE does not require
+            value function or Q-function unlike all previous introduced algorithms.
+        </p>
+
+        <p>
+            In this chapter, we will first learn how to derive policy gradient used in
+            REINFORCE and all policy gradient based RL algorithms, and then introduce the
+            vanilla policy gradient algorithm with baseline estimation (A2C).
+        </p>
+
+        <p>
+            <strong>Warning:</strong> There will be a lot of math in this chapter, so be prepared!
+        </p>
+
+        <h2>Section 1: REINFORCE - A Model-Free Algorithm</h2>
+
+        <p>
+            REINFORCE is a model-free algorithm, meaning that we do not need to
+            know the analytical form of transition probabilities or the reward function, nor
+            do we need to explicitly learn these functions.
+        </p>
+
+        <p>
+            Recall our reinforcement learning objective: to find the policy that leads to the most
+            expected rewards, mathematically defined as:
+        </p>
+
+        <div class="math-block">
+            $$\max_\theta J(\theta) = \max_\theta \mathbb{E}\left[\sum_{t=0}^H \gamma^t R(s_t, a_t); \pi_\theta\right]$$
+        </div>
+
+        <p>
+            Our goal is to perform gradient ascent on this objective by taking its derivative:
+        </p>
+
+        <div class="math-block">
+            $$\nabla_\theta J(\theta) = \nabla_\theta \mathbb{E}\left[\sum_{t=0}^H \gamma^t R(s_t, a_t); \pi_\theta\right]$$
+        </div>
+
+        <p>
+            To simplify the notation, we use $\tau$ to denote the entire state-action sequence
+            $\{s_t, a_t, s_{t+1}, a_{t+1}, ...\}$ generated by policy $\pi_\theta$, then:
+        </p>
+
+        <div class="math-block">
+            $$\nabla_\theta J(\theta) = \nabla_\theta \int P_\theta(\tau) R(\tau) d\tau \quad \text{(expand expectation)}$$
+        </div>
+
+        <div class="math-block">
+            $$= \int \nabla_\theta P_\theta(\tau) R(\tau) d\tau \quad \text{(Leibniz integral rule)}$$
+        </div>
+
+        <div class="math-block">
+            $$= \int P_\theta(\tau) \nabla_\theta \log P_\theta(\tau) R(\tau) d\tau \quad \left(\nabla_\theta \log P_\theta(\tau) = \frac{\nabla P_\theta(\tau)}{P_\theta(\tau)}\right)$$
+        </div>
+
+        <div class="math-block">
+            $$= \mathbb{E}_{\tau \sim P_\theta} \left[\nabla_\theta \log P_\theta(\tau) R(\tau)\right]$$
+        </div>
+
+        <p>
+            Now we have successfully derived the policy gradient with respect to $\theta$,
+            we can further decompose the trajectory $\tau$ into states and actions:
+        </p>
+
+        <div class="math-block">
+            $$\mathbb{E}_{\tau \sim P_\theta} \left[\nabla_\theta \log P_\theta(\tau) R(\tau)\right]$$
+        </div>
+
+        <div class="math-block">
+            $$= \mathbb{E}_{\tau \sim P_\theta} \left[\nabla_\theta \log\left(\prod_{t=0}^H P(s_{t+1}|s_t, a_t) \cdot \pi_\theta(a_t|s_t)\right) R(\tau)\right]$$
+        </div>
+
+        <div class="math-block">
+            $$= \mathbb{E}_{\tau \sim P_\theta} \left[\nabla_\theta \sum_{t=0}^H \log P(s_{t+1}|s_t, a_t) + \nabla_\theta \sum_{t=0}^H \log \pi_\theta(a_t|s_t) R(\tau)\right]$$
+        </div>
+
+        <div class="math-block">
+            $$= \mathbb{E}_{\tau \sim P_\theta} \left[\nabla_\theta \sum_{t=0}^H \log \pi_\theta(a_t|s_t) R(\tau)\right]$$
+        </div>
+
+        <p>
+            Because policy $\pi_\theta$ is a differentiable neural network and $R(\tau)$ is a constant,
+            we can easily calculate the gradient of $\sum_{t=0}^H \log \pi_\theta(a_t|s_t)$ w.r.t. its weights $\theta$. However, we can't
+            directly calculate the expectation, therefore we can estimate it using sampling.
+            Recall that we used the same technique in previous chapters to estimate Q-function.
+            Hence we obtain an empirical trajectory generated by policy $\pi_\theta$, then we can
+            estimate the gradient by:
+        </p>
+
+        <div class="math-block">
+            $$\mathbb{E}_{\tau \sim P_\theta} \left[\nabla_\theta \sum_{t=0}^H \log \pi_\theta(a_t|s_t) R(\tau)\right]$$
+        </div>
+
+        <div class="math-block">
+            $$\approx \frac{1}{N} \sum_{i=1}^N \left[\nabla_\theta \log \pi_\theta(a_t|s_t) R(\tau)\right]$$
+        </div>
+
+        <p>
+            Now, we have completed the full derivation of the policy gradient. To offer an
+            intuitive understanding of what this policy gradient is doing:
+        </p>
+
+        <p>
+            $\nabla_\theta P(\tau) = \nabla_\theta \log \pi_\theta(a_t|s_t)$ is intuitively the direction of change for $\theta$ to
+            make trajectory $\tau$ more likely to occur, we scale the $P(\tau)$ by its cumulative
+            reward $R(\tau)$, essentially making trajectories with higher reward more likely to happen.
+        </p>
+
+        <h2>Section 2: Baseline Reduction</h2>
+
+        <p>
+            In order to make policy update more stable, a common strategy is to reduce
+            the variance of gradient update, often by subtracting a baseline estimation as follows:
+        </p>
+
+        <div class="math-block">
+            $$\hat{g} = \frac{1}{N} \sum_{i=1}^N \sum_{t=0}^H \nabla_\theta \log \pi_\theta(a_t^{(i)}, s_t^{(i)}) \left(\sum_{k=t}^H R(s_k^{(i)}, a_k^{(i)}) - b(s_k^{(i)})\right)$$
+        </div>
+
+        <p>
+            An important thing to note here is that the reward is calculated from step $k=t$,
+            the intuition here is that action before $k=t$ doesn't affect future reward, so we can
+            simply omit it. There are many strategies on how we can calculate baseline function $b$:
+        </p>
+
+        <ol>
+            <li>Constant baseline: $b = \mathbb{E}[R(\tau)] \approx \frac{1}{N} \sum_{i=1}^N R(\tau^{(i)})$</li>
+            <li>Time dependent baseline: $b_t = \frac{1}{N} \sum_{i=1}^N \sum_{k=t}^H R(a_k^{(i)}, s_k^{(i)})$</li>
+            <li>State dependent expected return:
+                $$b(s_t) = \mathbb{E}[r_t + r_{t+1} + ... + r_H] = V_\phi^\pi(s_t)$$
+            </li>
+        </ol>
+
+        <p>
+            When using value function $V_\phi^\pi$ to estimate the expected return, we can calculate it
+            by regression against empirical return (similar to supervised learning):
+        </p>
+
+        <div class="math-block">
+            $$\phi_{i+1} = \phi_i + \alpha \nabla_\phi \frac{1}{n-1} \sum_{j=0}^n \left(V_\phi^\pi(s_j^{(i)}) - \sum_{k=t}^H R(s_k^{(i)}, a_k^{(i)})\right)^2$$
+        </div>
+
+        <p>
+            But in practice, we often use TD-update to update $\phi$. This method is also called bootstrap
+            estimation:
+        </p>
+
+        <div class="math-block">
+            $$\phi_{i+1} = \phi_i + \alpha \nabla_\phi \left[\sum_{t=0}^{H} ||r_t + V_\phi^\pi(s') - V_\phi[s]||_2^2 + \lambda||\phi - \phi_i||_2^2\right]$$
+        </div>
+
+        <p>
+            Note that we also added L2 regularization here to prevent big updates. Bootstrap estimation
+            is often preferable in context of long or infinite horizon RL settings, because we don't need
+            to collect the entire episode for an update.
+        </p>
+
+        <p>
+            In variants like Async Advantage Actor-Critic (A3C) and Generalized Advantage Estimation (GAE),
+            we utilize the middle ground of these two methods by using n-step returns (looking ahead n steps
+            before bootstrapping). In case of GAE, it takes weighted average of the n-step return.
+        </p>
+
+        <h2>Algorithm Pseudocode</h2>
+
+        <figure class="blog-figure">
+            <img src="../images/policy-gradient-gae-algorithm.png" alt="Policy Gradient + GAE Algorithm">
+            <figcaption>Policy Gradient with Generalized Advantage Estimation pseudocode</figcaption>
+        </figure>
+
+        <h2>Conclusion</h2>
+
+        <p>
+            In this chapter, we have derived the policy gradient theorem from first principles and introduced the REINFORCE algorithm,
+            one of the foundational algorithms in policy-based reinforcement learning. We've seen how REINFORCE differs fundamentally
+            from value-based methods like DQN by directly optimizing the policy parameters through gradient ascent on expected returns.
+            Building on top of Vanilla Policy Gradient algorithm, We introduced A2C by using a value function to estimate the baseline and
+            how value function is updated using TD-update and GAE. In the next chapter we will discuss Proximal Policy Optimization(PPO),
+            a cornerstone RL algorithm benchmark used in many academic research papers.
+        </p>
+
+        <!-- Post actions bar -->
+        <div class="post-actions-bar">
+            <button class="like-btn" onclick="toggleLike(4)">
+                <i class="far fa-heart"></i> <span class="like-count">0</span>
+            </button>
+            <button class="comment-btn" onclick="toggleComments(4)">
+                <i class="far fa-comment"></i> <span class="comment-count">0</span>
+            </button>
+            <span class="view-count"><i class="far fa-eye"></i> 0</span>
+            <button class="share-btn" onclick="sharePost()">
+                <i class="fas fa-share"></i> Share
+            </button>
+        </div>
+
+        <!-- Comments Section -->
+        <div class="comments-section post-comment-section" id="comments-4">
+            <h3>Comments</h3>
+            <div class="comment-form">
+                <input type="text" placeholder="Your name" class="comment-name" id="comment-name-4">
+                <textarea placeholder="Share your thoughts..." class="comment-text" id="comment-text-4"></textarea>
+                <button class="btn-primary" onclick="addComment(4)">Post Comment</button>
+            </div>
+            <div class="comments-list" id="comments-list-4">
+                <!-- Comments will be loaded here -->
+            </div>
+        </div>
+
+        <a href="../blog.html" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Blog
+        </a>
+    </article>
+</div>
+
+<footer>
+    <div class="container">
+        <p>&copy; 2024 Haitao Wang. All rights reserved.</p>
+    </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/contrib/auto-render.min.js"></script>
+<script src="../js/main.js"></script>
+<script>
+    // Initialize KaTeX rendering
+    renderMathInElement(document.body, {
+        delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false}
+        ]
+    });
+</script>
+</body>
+</html>
