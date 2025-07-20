@@ -294,10 +294,15 @@
             intuitive understanding of what this policy gradient is doing:
         </p>
 
+        <figure class="blog-figure">
+            <img src="../src/chapter4/illustration.png" alt="illustration">
+            <figcaption>figure 1: Illustration of Policy Gradient</figcaption>
+        </figure>
+
         <p>
             $\nabla_\theta P(\tau) = \nabla_\theta \log \pi_\theta(a_t|s_t)$ is intuitively the direction of change for $\theta$ to
             make trajectory $\tau$ more likely to occur, we scale the $P(\tau)$ by its cumulative
-            reward $R(\tau)$, essentially making trajectories with higher reward more likely to happen.
+            reward $R(\tau)$, essentially making trajectories with higher reward more likely to happen as shown in figure 1.
         </p>
 
         <h2>Section 2: Baseline Reduction</h2>
@@ -331,7 +336,7 @@
         </p>
 
         <div class="math-block">
-            $$\phi_{i+1} = \phi_i + \alpha \nabla_\phi \frac{1}{n-1} \sum_{j=0}^n \left(V_\phi^\pi(s_j^{(i)}) - \sum_{k=t}^H R(s_k^{(i)}, a_k^{(i)})\right)^2$$
+            $$\phi_{i+1} = \phi_i + \alpha \nabla_\phi \frac{1}{n} \sum_{t=0}^n \left(V_\phi^\pi(s_j^{(i)}) - \sum_{k=t}^H R(s_k^{(i)}, a_k^{(i)})\right)^2$$
         </div>
 
         <p>
@@ -340,7 +345,7 @@
         </p>
 
         <div class="math-block">
-            $$\phi_{i+1} = \phi_i + \alpha \nabla_\phi \left[\sum_{t=0}^{H} ||r_t + V_\phi^\pi(s') - V_\phi[s]||_2^2 + \lambda||\phi - \phi_i||_2^2\right]$$
+            $$\phi_{i+1} = \phi_i + \alpha \nabla_\phi \left[\sum_{t=0}^{H} ||r_t + V_\phi^\pi(s') - V_\phi(s)||_2^2 + \lambda||\phi - \phi_i||_2^2\right]$$
         </div>
 
         <p>
@@ -358,7 +363,7 @@
         <h2>Algorithm Pseudocode</h2>
 
         <figure class="blog-figure">
-            <img src="../images/policy-gradient-gae-algorithm.png" alt="Policy Gradient + GAE Algorithm">
+            <img src="../src/chapter4/pseudocode.png" alt="Policy Gradient + GAE Algorithm">
             <figcaption>Policy Gradient with Generalized Advantage Estimation pseudocode</figcaption>
         </figure>
 
