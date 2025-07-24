@@ -57,6 +57,17 @@ const BLOG_POSTS_DATA = [
             "            REINFORCE and all policy gradient based RL algorithms, and then introduce the\n" +
             "            vanilla policy gradient algorithm with baseline estimation (A2C)."
     },
+    {
+        id: 5,
+        title: "Maximum Entropy Framework in Reinforce Learning",
+        url: "blog/maximum_entropy_framework.html",
+        category: "theory",
+        date: "July 24, 2025",
+        readTime: 20,
+        tags: ["theory", "SAC", "PPO", "Max Entropy Framework", "value iteration"],
+        excerpt: "This chapter contains a very comprehensive explanation on max entropy framework. "
+    },
+
 
 
 ];

@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maximum Entropy Framework in Reinforcement Learning - Haitao Wang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .blog-post-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .blog-post-content h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .blog-post-content h2 {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+
+        .blog-post-content h3 {
+            font-size: 1.4rem;
+            color: var(--text-dark);
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        .blog-post-content p {
+            margin-bottom: 20px;
+            line-height: 1.8;
+            color: var(--text-dark);
+        }
+
+        .blog-post-content ul, .blog-post-content ol {
+            margin: 20px 0;
+            padding-left: 30px;
+        }
+
+        .blog-post-content li {
+            margin-bottom: 10px;
+            line-height: 1.8;
+        }
+
+        pre {
+            background: var(--light-bg);
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        code {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .algorithm-box {
+            background: var(--light-bg);
+            border-left: 4px solid var(--accent-color);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .blog-figure {
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .blog-figure img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .blog-figure figcaption {
+            margin-top: 10px;
+            font-style: italic;
+            color: var(--text-light);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: 40px;
+            transition: gap 0.3s ease;
+        }
+
+        .back-link:hover {
+            gap: 10px;
+        }
+
+        .post-actions-bar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 50px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 40px 0;
+            border: 1px solid var(--border-color);
+        }
+
+        .post-actions-bar .like-btn,
+        .post-actions-bar .comment-btn,
+        .post-actions-bar .share-btn {
+            background: none;
+            border: none;
+            color: var(--text-dark);
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .post-actions-bar .like-btn:hover,
+        .post-actions-bar .comment-btn:hover,
+        .post-actions-bar .share-btn:hover {
+            background: var(--light-bg);
+            color: var(--accent-color);
+        }
+
+        .post-actions-bar .like-btn.liked {
+            color: var(--danger-color);
+        }
+
+        .post-comment-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .math-block {
+            margin: 20px 0;
+            overflow-x: auto;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="container">
+        <nav>
+            <a href="../index.html" class="nav-logo">Haitao Wang</a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="../blog.html">Blog</a>
+                <a href="../projects.html">Projects</a>
+                <a href="../resources.html">Resources</a>
+                <a href="../forum.html">Forum</a>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<div class="container">
+    <article class="blog-post-content" data-post-id="5">
+        <h1>Chapter 5: Maximum Entropy Framework in Reinforcement Learning</h1>
+        <div class="blog-meta">
+            <span><i class="far fa-calendar"></i> January 25, 2024</span>
+            <span><i class="far fa-clock"></i> 15 min read</span>
+            <span class="tag">max-entropy</span>
+            <span class="tag">SAC</span>
+            <span class="tag">theory</span>
+        </div>
+
+        <h2>Section 1: Introduction</h2>
+
+        <p>
+            In this section, we will briefly introduce the core ideas behind maximum entropy framework
+            and also the motivation behind why we want to learn not just a deterministic policy during
+            our reinforcement learning training, but a stochastic policy instead. But most importantly, I will
+            lay out the mathematical framework behind solving Max-Ent RL problems, which is used in many foundational
+            DRL algorithms like PPO and SAC.
+        </p>
+
+        <p>
+            In Max-Entropy framework, we aim to learn a policy that maximizes both expected
+            reward and entropy of its actions at any given state. There are some very compelling motivations
+            behind learning a stochastic policy and including it into our RL objective function.
+            Now objective function under Max-Ent formulation:
+        </p>
+
+        <div class="math-block">
+            $$\max \mathbb{E}\left[\sum_{t=0}^H r_t + \beta H(\pi(\cdot|s_t))\right]$$
+        </div>
+
+        <p>
+            By including the extra entropy term, we are essentially encouraging exploration, which helps the
+            agent to discover better options.
+        </p>
+
+        <p>
+            Max-Ent framework provides a principled way to represent uncertainty about optimal actions.
+            Instead of sticking with a deterministic action, it learns a probability distribution over actions.
+        </p>
+
+        <p>
+            Max-Ent framework also prevents overfitting by explicitly modeling the uncertainty
+            in optimal policy.
+        </p>
+
+        <p>
+            Note: It is essential to use stochastic policy in Max-Ent. In practice, RL practitioners
+            often uses Gaussian policy.
+        </p>
+
+        <h2>Section 2: Solving Max-Ent Value Iteration</h2>
+
+        <p>
+            In this section, we will demonstrate how to analytically solve Value iteration using
+            max entropy framework. A key motivation for this section is to show how Bellman update works
+            in conjunction with the new entropy term.
+        </p>
+
+        <p>
+            First we formulate the problem as a constraint optimization problem:
+        </p>
+
+        <div class="math-block">
+            $$\text{objective: } \max_{\pi} \mathbb{E}\left[\sum_t r_t + \beta H(\pi(\cdot|s_t))\right]$$
+        </div>
+
+        <div class="math-block">
+            $$= \sum_{s,a} \max_{\pi} \mathbb{E}[r(s,a) + \beta H(\pi(\cdot)|s)]$$
+        </div>
+
+        <div class="math-block">
+            $$= \sum_{s,a} \max_{\pi \in \Pi(s)} \sum_a p(a) r(a,s) - \beta \sum_a p(a) \log p(a)$$
+        </div>
+
+        <p>
+            Let's focus on one time step at a time, we get the following optimization problem:
+        </p>
+
+        <div class="math-block">
+            $$\text{objective: } \max_{p(a) \in \Pi(s)} \sum_a p(a) r(a,s) - \beta \sum_a p(a) \log p(a) \quad (1)$$
+        </div>
+
+        <p>
+            constraints: $\sum_a p(a) = 1$ (probability distribution needs to add up to 1)
+        </p>
+
+        <p>
+            The min-max form of the optimization's Lagrangian is:
+        </p>
+
+        <div class="math-block">
+            $$\max_{\pi(a)} \min_{\lambda} \sum_a p(a) r(a,s) - \beta \sum_a p(a) \log p(a) + \lambda(\sum_a p(a) - 1)$$
+        </div>
+
+        <p>
+            Solving:
+        </p>
+
+        <div class="math-block">
+            $$\frac{\partial}{\partial p(a)} \mathcal{L}(p(a), \lambda) = 0 \quad (2)$$
+        </div>
+
+        <div class="math-block">
+            $$\frac{\partial}{\partial \lambda} \mathcal{L}(p(a), \lambda) = 0 \quad (3)$$
+        </div>
+
+        <p>
+            (2) is trivial and solving (3):
+        </p>
+
+        <div class="math-block">
+            $$\frac{\partial}{\partial p(a)} \sum_a p(a) r(a,s) - \beta \sum_a p(a) \log p(a) + \lambda(\sum_a p(a) - 1) = 0$$
+        </div>
+
+        <div class="math-block">
+            $$r(a,s) - \beta(\log p(a) - 1) + \lambda = 0$$
+        </div>
+
+        <div class="math-block">
+            $$\beta \log p(a) = r(a,s) - \beta + \lambda$$
+        </div>
+
+        <div class="math-block">
+            $$p(a) = \exp\left[\frac{1}{\beta}(r(a,s) - \beta + \lambda)\right] \quad (4)$$
+        </div>
+
+        <p>
+            Applying the constraint:
+        </p>
+
+        <div class="math-block">
+            $$\sum_a p(a) = 1$$
+        </div>
+
+        <div class="math-block">
+            $$\sum_a \exp\left[\frac{1}{\beta}(r(a,s) - \beta + \lambda)\right] = 1$$
+        </div>
+
+        <div class="math-block">
+            $$\exp(\frac{\lambda - \beta}{\beta}) + \sum_a \exp(\frac{r(a,s)}{\beta}) = 1$$
+        </div>
+
+        <div class="math-block">
+            $$\exp(\frac{\lambda - \beta}{\beta}) = \frac{1}{\sum_a \exp(\frac{r(a,s)}{\beta})} \quad (5)$$
+        </div>
+
+        <p>
+            Subbing (5) in (4):
+        </p>
+
+        <div class="math-block">
+            $$p(a) = \exp(\frac{r(a,s)}{\beta}) \cdot \frac{1}{\sum_a \exp(\frac{r(a,s)}{\beta})} \quad (6)$$
+        </div>
+
+        <p>
+            Subbing (6) in (1), we eventually get:
+        </p>
+
+        <div class="math-block">
+            $$V(s) = \beta \log \sum_a \exp\left(\frac{1}{\beta} r(a,s)\right) \quad (7)$$
+        </div>
+
+        <p>
+            During Bellman update, we denote the next state as $s'$:
+        </p>
+
+        <div class="math-block">
+            $$V_*(s) = \max_{\pi} \mathbb{E}[r(a,s) + \beta H(\pi(\cdot|s_t)) + V_{k-1}(s')]$$
+        </div>
+
+        <div class="math-block">
+            $$= \max_{\pi} \mathbb{E}[Q_*(a,s) + \beta H(\pi(\cdot|s))]$$
+        </div>
+
+        <div class="math-block">
+            $$= \beta \log \sum_a \exp\left(\frac{1}{\beta} Q_*(a,s)\right) \quad \text{(using (7))} \quad (8)$$
+        </div>
+
+        <p>
+            And similarly from (6), we derive:
+        </p>
+
+        <div class="math-block">
+            $$p(a) = \frac{\exp\left(\frac{Q(a,s)}{\beta}\right)}{\sum_a \exp\left(\frac{Q(a,s)}{\beta}\right)} = \sigma\left(\frac{Q(a,s)}{\beta}\right) \quad (9)$$
+        </div>
+
+        <p>
+            Now (8), (9) give us a way to directly perform Bellman update
+            and calculate the probability of taking each action. Additionally,
+            (9) offers a nice interpretation of $p(a)$, that is simply $\frac{Q(a,s)}{\beta}$
+            under sigmoid transformation.
+        </p>
+
+        <h2>Section 3: Max-Ent in Practice</h2>
+
+        <p>
+            In the previous section, we demonstrated how Max-Ent framework changes
+            the way we solve value iteration. But in the end, we are able to derive an
+            analytical solution with finite state-action space.
+        </p>
+
+        <p>
+            In this section, we take things further by showing how Max-Ent framework is
+            used in deep reinforcement learning problems where the state-action space becomes intractable.
+        </p>
+
+        <p>
+            For example, A2C algorithm under Max-Ent framework has modified objective:
+        </p>
+
+        <div class="math-block">
+            $$\max_{\pi} \sum_{t=0}^H \pi(s) r(s) + \beta H(\pi(\cdot|s_t))$$
+        </div>
+
+        <p>
+            The problem we are facing here is how do we calculate the entropy term?
+            The answer is simple,
+        </p>
+
+        <p>
+            When action space $A$ is discrete:
+        </p>
+
+        <div class="math-block">
+            $$H(\pi(\cdot|s_t)) = -\sum_a \pi(a|s_t) \log \pi(a|s_t)$$
+        </div>
+
+        <p>
+            When action space $A$ is continuous using Gaussian policy:
+        </p>
+
+        <div class="math-block">
+            $$\pi(a|s_t) = \mathcal{N}(\mu(s_t), \sigma(s_t))$$
+        </div>
+
+        <p>
+            The probability density function of the d-dimensional Gaussian is given by:
+        </p>
+
+        <div class="math-block">
+            $$\pi(a|s_t) = \frac{1}{(2\pi)^{d/2}|\Sigma|^{1/2}} \exp\left(-\frac{1}{2}(a-\mu)^T \Sigma^{-1} (a-\mu)\right) \quad (10)$$
+        </div>
+
+        <p>
+            The entropy of a diagonal Gaussian becomes:
+        </p>
+
+        <div class="math-block">
+            $$H(\pi) = -\mathbb{E}[\log \pi(a)]$$
+        </div>
+
+        <div class="math-block">
+            $$= \mathbb{E}\left[\frac{d}{2}\log(2\pi) + \frac{1}{2}\log|\Sigma| + \frac{1}{2}(a-\mu)^T \Sigma^{-1}(a-\mu)\right]$$
+        </div>
+
+        <div class="math-block">
+            $$= \frac{d}{2}\log(2\pi) + \frac{1}{2}\log|\Sigma| + \mathbb{E}\left[\frac{1}{2}(a-\mu)^T \Sigma^{-1}(a-\mu)\right]$$
+        </div>
+
+        <div class="math-block">
+            $$= \frac{d}{2}\log(2\pi) + \frac{1}{2}\log|\Sigma| + \frac{1}{2}\mathbb{E}\left[\text{Tr}(\Sigma^{-1}(a-\mu)(a-\mu)^T)\right]$$
+        </div>
+
+        <div class="math-block">
+            $$= \frac{d}{2}\log(2\pi) + \frac{1}{2}\log|\Sigma| + \frac{1}{2}\mathbb{E}\left[\text{Tr}(\Sigma^{-1}\Sigma)\right]$$
+        </div>
+
+        <div class="math-block">
+            $$= \frac{d}{2}\log(2\pi) + \frac{1}{2}\log|\Sigma| + \frac{d}{2}$$
+        </div>
+
+        <div class="math-block">
+            $$= \frac{1}{2}\log\left((2\pi e)^d |\Sigma|\right)$$
+        </div>
+
+        <div class="math-block">
+            $$= \frac{1}{2}\sum_{i=1}^d \log(2\pi e \sigma_i^2)$$
+        </div>
+
+        <p>
+            $\sigma_i^2$ ... $\sigma_d^2$ are the variances of each dimension, because our Gaussian policy
+            outputs the mean $\mu_i$ and variance $\sigma_i^2$ directly. We can easily calculate the
+            entropy term with respect to current Gaussian policy $\pi$.
+        </p>
+
+        <h2>Conclusion</h2>
+
+        <p>
+            In this chapter, we've explored the Maximum Entropy framework in reinforcement learning, which forms the theoretical foundation for modern algorithms like SAC (Soft Actor-Critic) and influences the design of PPO. The key insight is that by maximizing both expected reward and policy entropy, we achieve several important benefits:
+        </p>
+
+        <ul>
+            <li><strong>Improved Exploration:</strong> The entropy term naturally encourages the policy to explore different actions, preventing premature convergence to suboptimal deterministic policies</li>
+            <li><strong>Robustness:</strong> Stochastic policies are more robust to perturbations and model errors compared to deterministic policies</li>
+            <li><strong>Principled Framework:</strong> Max-Ent provides a mathematically principled way to balance exploration and exploitation through the temperature parameter β</li>
+        </ul>
+
+        <p>
+            We derived the optimal policy form under the Max-Ent framework, showing that it takes the form of a softmax over Q-values with temperature β. This soft Bellman update replaces the hard max operation in standard value iteration with a soft maximum (log-sum-exp), leading to smoother value functions and more stable learning.
+        </p>
+
+        <p>
+            For practical implementation, we showed how to compute entropy for both discrete and continuous action spaces, with particular attention to Gaussian policies commonly used in continuous control tasks. The entropy of a diagonal Gaussian policy has a closed-form solution, making it computationally efficient to optimize.
+        </p>
+
+        <p>
+            This maximum entropy framework will be essential when we explore SAC in the next chapter, where we'll see how these theoretical insights translate into a state-of-the-art off-policy algorithm for continuous control.
+        </p>
+
+        <!-- Post actions bar -->
+        <div class="post-actions-bar">
+            <button class="like-btn" onclick="toggleLike(5)">
+                <i class="far fa-heart"></i> <span class="like-count">0</span>
+            </button>
+            <button class="comment-btn" onclick="toggleComments(5)">
+                <i class="far fa-comment"></i> <span class="comment-count">0</span>
+            </button>
+            <span class="view-count"><i class="far fa-eye"></i> 0</span>
+            <button class="share-btn" onclick="sharePost()">
+                <i class="fas fa-share"></i> Share
+            </button>
+        </div>
+
+        <!-- Comments Section -->
+        <div class="comments-section post-comment-section" id="comments-5">
+            <h3>Comments</h3>
+            <div class="comment-form">
+                <input type="text" placeholder="Your name" class="comment-name" id="comment-name-5">
+                <textarea placeholder="Share your thoughts..." class="comment-text" id="comment-text-5"></textarea>
+                <button class="btn-primary" onclick="addComment(5)">Post Comment</button>
+            </div>
+            <div class="comments-list" id="comments-list-5">
+                <!-- Comments will be loaded here -->
+            </div>
+        </div>
+
+        <a href="../blog.html" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Blog
+        </a>
+    </article>
+</div>
+
+<footer>
+    <div class="container">
+        <p>&copy; 2024 Haitao Wang. All rights reserved.</p>
+    </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/contrib/auto-render.min.js"></script>
+<script src="../js/main.js"></script>
+<script>
+    // Initialize KaTeX rendering
+    renderMathInElement(document.body, {
+        delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false}
+        ]
+    });
+</script>
+</body>
+</html>
