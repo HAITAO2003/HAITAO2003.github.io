@@ -229,7 +229,7 @@
 
         <h2>Section 1: Tabular Q-Learning</h2>
 
-        <h3>2.1 From Value Iteration to Q-Learning</h3>
+        <h3>1.1 From Value Iteration to Q-Learning</h3>
 
         <p>
             Let's first recall the Bellman update step in value iteration from Chapter 2:
@@ -247,7 +247,7 @@
             through trial-and-error.
         </p>
 
-        <h3>2.2 The Q-Function</h3>
+        <h3>1.2 The Q-Function</h3>
 
         <p>
             To understand Q-learning, first it's important to note that $Q(s,a)$ denotes the expected utility
@@ -268,7 +268,7 @@
             $$Q_{k+1}(s,a) = \mathbb{E}_{s' \sim P(s'|s,a)} \left[R(s,a,s') + \gamma \max_{a'} Q_k(s',a')\right]$$
         </div>
 
-        <h3>2.3 Sampling and Temporal Difference Learning</h3>
+        <h3>1.3 Sampling and Temporal Difference Learning</h3>
 
         <p>
             To estimate the expectation, we use sampling. Suppose we sample action $a$ which leads to next
@@ -301,7 +301,7 @@
             controls how much we update the Q-value based on the new sample.
         </p>
 
-        <h3>2.4 Exploration vs. Exploitation</h3>
+        <h3>1.4 Exploration vs. Exploitation</h3>
 
         <p>
             Some people might ask: how do we sample action?
@@ -341,7 +341,7 @@
             </ol>
         </div>
 
-        <h3>2.5 Amazing Facts about Q-Learning</h3>
+        <h3>1.5 Fun Facts about Q-Learning</h3>
 
         <ul>
             <li>It is an <strong>off-policy algorithm</strong></li>
@@ -350,7 +350,7 @@
 
         <h2>Section 2: Deep Q Networks (DQN)</h2>
 
-        <h3>3.1 Why Deep Q Networks?</h3>
+        <h3>2.1 Why Deep Q Networks?</h3>
 
         <p>
             The reason Q-learning introduced in previous section is called tabular Q-learning
@@ -367,7 +367,7 @@
             hence aptly named DRL.
         </p>
 
-        <h3>3.2 Function Approximation with Neural Networks</h3>
+        <h3>2.2 Function Approximation with Neural Networks</h3>
 
         <p>
             Instead of maintaining a Q-table, we can use a neural network with parameters $\theta$ to
@@ -400,7 +400,7 @@
             using the label $\text{target}(s')$ like in supervised learning.
         </p>
 
-        <h3>3.3 Deep Q-Network Architecture</h3>
+        <h3>2.3 Deep Q-Network Architecture</h3>
 
         <div class="example-box">
             <h4>Example: DQN for Atari Games</h4>
@@ -430,7 +430,7 @@
             $\theta' = \tau\theta + (1-\tau)\theta'$ (also called soft update).
         </p>
 
-        <h2>3. Double DQN</h2>
+        <h2>Double DQN</h2>
 
         <p>
             When updating $\theta$, the supervised learning target is not a constant value,
