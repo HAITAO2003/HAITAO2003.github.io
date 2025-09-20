@@ -40,7 +40,7 @@ body {
 .blog-post-content p,
 .blog-post-content li {
     font-family: charter, Georgia, Cambria, "Times New Roman", Times, serif;
-    font-size: 21px;
+    font-size: 19px;
     line-height: 1.58;
     letter-spacing: -0.003em;
 }
@@ -54,6 +54,58 @@ body {
     font-family: sohne, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-weight: 700;
     letter-spacing: -0.022em;
+}
+
+/* Math equation styling */
+.math-block {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    padding: 10px 0;
+}
+
+.math-block .katex-display {
+    text-align: left !important;
+    margin: 0 !important;
+    display: block !important;
+    font-size: 1.0em !important;
+}
+
+.math-block .katex-display > .katex {
+    text-align: left !important;
+    font-size: 1.0em !important;
+}
+
+/* Hide equation numbers in align environments */
+.katex .tag {
+    display: none !important;
+}
+
+.katex .eqn-num {
+    display: none !important;
+}
+
+.katex .ams-align .tag {
+    display: none !important;
+}
+
+/* For consecutive math blocks, ensure they align properly */
+.math-block + .math-block {
+    margin-top: 5px;
+}
+
+/* General KaTeX styling */
+.katex-display {
+    font-size: 1.0em !important;
+}
+
+.katex-display > .katex {
+    font-size: 1.0em !important;
+}
+
+/* Inline math */
+.katex {
+    font-size: 1.0em !important;
 }
 
 .container {

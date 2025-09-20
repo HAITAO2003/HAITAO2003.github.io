@@ -117,11 +117,6 @@
         }
 
 
-        .math-block {
-            margin: 15px 0;
-            overflow-x: auto;
-            text-align: left;
-        }
     </style>
 </head>
 <body class="blog-page-body">
@@ -204,15 +199,10 @@
         </p>
 
         <div class="math-block">
-            $$\text{objective: } \max_{\pi} \mathbb{E}\left[\sum_t r_t + \beta H(\pi(\cdot|s_t))\right]$$
-        </div>
-
-        <div class="math-block">
-            $$= \sum_{s,a} \max_{\pi} \mathbb{E}[r(s,a) + \beta H(\pi(\cdot)|s)]$$
-        </div>
-
-        <div class="math-block">
-            $$= \sum_{s,a} \max_{\pi \in \Pi(s)} \sum_a p(a) r(a,s) - \beta \sum_a p(a) \log p(a)$$
+            $$\begin{align*}
+            \max_{\pi} \mathbb{E}\left[\sum_t r_t + \beta H(\pi(\cdot|s_t))\right] &= \sum_{s,a} \max_{\pi} \mathbb{E}[r(s,a) + \beta H(\pi(\cdot)|s)]\\
+            &= \sum_{s,a} \max_{\pi \in \Pi(s)} \sum_a p(a) r(a,s) - \beta \sum_a p(a) \log p(a)
+            \end{align*}$$
         </div>
 
         <p>
@@ -220,7 +210,7 @@
         </p>
 
         <div class="math-block">
-            $$\text{objective: } \max_{p(a) \in \Pi(s)} \sum_a p(a) r(a,s) - \beta \sum_a p(a) \log p(a) \quad (1)$$
+            $$\max_{p(a) \in \Pi(s)} \sum_a p(a) r(a,s) - \beta \sum_a p(a) \log p(a)$$
         </div>
 
         <p>
@@ -240,15 +230,15 @@
         </p>
 
         <div class="math-block">
-            $$\frac{\partial}{\partial p(a)} \mathcal{L}(p(a), \lambda) = 0 \quad (2)$$
+            $$\frac{\partial}{\partial p(a)} \mathcal{L}(p(a), \lambda) = 0$$
         </div>
 
         <div class="math-block">
-            $$\frac{\partial}{\partial \lambda} \mathcal{L}(p(a), \lambda) = 0 \quad (3)$$
+            $$\frac{\partial}{\partial \lambda} \mathcal{L}(p(a), \lambda) = 0$$
         </div>
 
         <p>
-            (2) is trivial and solving (3):
+            The first equation is trivial and solving the second:
         </p>
 
         <div class="math-block">
@@ -264,7 +254,7 @@
         </div>
 
         <div class="math-block">
-            $$p(a) = \exp\left[\frac{1}{\beta}(r(a,s) - \beta + \lambda)\right] \quad (4)$$
+            $$p(a) = \exp\left[\frac{1}{\beta}(r(a,s) - \beta + \lambda)\right]$$
         </div>
 
         <p>
@@ -284,23 +274,23 @@
         </div>
 
         <div class="math-block">
-            $$\exp(\frac{\lambda - \beta}{\beta}) = \frac{1}{\sum_a \exp(\frac{r(a,s)}{\beta})} \quad (5)$$
+            $$\exp(\frac{\lambda - \beta}{\beta}) = \frac{1}{\sum_a \exp(\frac{r(a,s)}{\beta})}$$
         </div>
 
         <p>
-            Subbing (5) in (4):
+            Substituting back:
         </p>
 
         <div class="math-block">
-            $$p(a) = \exp(\frac{r(a,s)}{\beta}) \cdot \frac{1}{\sum_a \exp(\frac{r(a,s)}{\beta})} \quad (6)$$
+            $$p(a) = \exp(\frac{r(a,s)}{\beta}) \cdot \frac{1}{\sum_a \exp(\frac{r(a,s)}{\beta})}$$
         </div>
 
         <p>
-            Subbing (6) in (1), we eventually get:
+            Substituting this into our original objective, we eventually get:
         </p>
 
         <div class="math-block">
-            $$V(s) = \beta \log \sum_a \exp\left(\frac{1}{\beta} r(a,s)\right) \quad (7)$$
+            $$V(s) = \beta \log \sum_a \exp\left(\frac{1}{\beta} r(a,s)\right)$$
         </div>
 
         <p>
@@ -316,22 +306,22 @@
         </div>
 
         <div class="math-block">
-            $$= \beta \log \sum_a \exp\left(\frac{1}{\beta} Q_*(a,s)\right) \quad \text{(using (7))} \quad (8)$$
+            $$= \beta \log \sum_a \exp\left(\frac{1}{\beta} Q_*(a,s)\right)$$
         </div>
 
         <p>
-            And similarly from (6), we derive:
+            And similarly, we can derive the policy:
         </p>
 
         <div class="math-block">
-            $$p(a) = \frac{\exp\left(\frac{Q(a,s)}{\beta}\right)}{\sum_a \exp\left(\frac{Q(a,s)}{\beta}\right)} = \sigma\left(\frac{Q(a,s)}{\beta}\right) \quad (9)$$
+            $$p(a) = \frac{\exp\left(\frac{Q(a,s)}{\beta}\right)}{\sum_a \exp\left(\frac{Q(a,s)}{\beta}\right)} = \sigma\left(\frac{Q(a,s)}{\beta}\right)$$
         </div>
 
         <p>
-            Now (8), (9) give us a way to directly perform Bellman update
+            These equations give us a way to directly perform Bellman updates
             and calculate the probability of taking each action. Additionally,
-            (9) offers a nice interpretation of $p(a)$, that is simply $\frac{Q(a,s)}{\beta}$
-            under sigmoid transformation.
+            the policy equation offers a nice interpretation of $p(a)$, that is simply $\frac{Q(a,s)}{\beta}$
+            under softmax transformation.
         </p>
 
         <h2>Section 3: Max-Ent in Practice</h2>

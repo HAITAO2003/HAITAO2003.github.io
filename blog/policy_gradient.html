@@ -117,11 +117,6 @@
         }
 
 
-        .math-block {
-            margin: 15px 0;
-            overflow-x: auto;
-            text-align: left;
-        }
     </style>
 </head>
 <body class="blog-page-body">
@@ -201,19 +196,12 @@
         </p>
 
         <div class="math-block">
-            $$\nabla_\theta J(\theta) = \nabla_\theta \int P_\theta(\tau) R(\tau) d\tau \quad \text{(expand expectation)}$$
-        </div>
-
-        <div class="math-block">
-            $$= \int \nabla_\theta P_\theta(\tau) R(\tau) d\tau \quad \text{(Leibniz integral rule)}$$
-        </div>
-
-        <div class="math-block">
-            $$= \int P_\theta(\tau) \nabla_\theta \log P_\theta(\tau) R(\tau) d\tau \quad \left(\nabla_\theta \log P_\theta(\tau) = \frac{\nabla P_\theta(\tau)}{P_\theta(\tau)}\right)$$
-        </div>
-
-        <div class="math-block">
-            $$= \mathbb{E}_{\tau \sim P_\theta} \left[\nabla_\theta \log P_\theta(\tau) R(\tau)\right]$$
+            $$\begin{align*}
+            \nabla_\theta J(\theta) &= \nabla_\theta \int P_\theta(\tau) R(\tau) d\tau\\
+            &= \int \nabla_\theta P_\theta(\tau) R(\tau) d\tau\\
+            &= \int P_\theta(\tau) \nabla_\theta \log P_\theta(\tau) R(\tau) d\tau\\
+            &= \mathbb{E}_{\tau \sim P_\theta} \left[\nabla_\theta \log P_\theta(\tau) R(\tau)\right]
+            \end{align*}$$
         </div>
 
         <p>
@@ -222,19 +210,11 @@
         </p>
 
         <div class="math-block">
-            $$\mathbb{E}_{\tau \sim P_\theta} \left[\nabla_\theta \log P_\theta(\tau) R(\tau)\right]$$
-        </div>
-
-        <div class="math-block">
-            $$= \mathbb{E}_{\tau \sim P_\theta} \left[\nabla_\theta \log\left(\prod_{t=0}^H P(s_{t+1}|s_t, a_t) \cdot \pi_\theta(a_t|s_t)\right) R(\tau)\right]$$
-        </div>
-
-        <div class="math-block">
-            $$= \mathbb{E}_{\tau \sim P_\theta} \left[\nabla_\theta \sum_{t=0}^H \log P(s_{t+1}|s_t, a_t) + \nabla_\theta \sum_{t=0}^H \log \pi_\theta(a_t|s_t) R(\tau)\right]$$
-        </div>
-
-        <div class="math-block">
-            $$= \mathbb{E}_{\tau \sim P_\theta} \left[\nabla_\theta \sum_{t=0}^H \log \pi_\theta(a_t|s_t) R(\tau)\right]$$
+            $$\begin{align*}
+            \mathbb{E}_{\tau \sim P_\theta} \left[\nabla_\theta \log P_\theta(\tau) R(\tau)\right] &= \mathbb{E}_{\tau \sim P_\theta} \left[\nabla_\theta \log\left(\prod_{t=0}^H P(s_{t+1}|s_t, a_t) \cdot \pi_\theta(a_t|s_t)\right) R(\tau)\right]\\
+            &= \mathbb{E}_{\tau \sim P_\theta} \left[\nabla_\theta \sum_{t=0}^H \log P(s_{t+1}|s_t, a_t) + \nabla_\theta \sum_{t=0}^H \log \pi_\theta(a_t|s_t) R(\tau)\right]\\
+            &= \mathbb{E}_{\tau \sim P_\theta} \left[\nabla_\theta \sum_{t=0}^H \log \pi_\theta(a_t|s_t) R(\tau)\right]
+            \end{align*}$$
         </div>
 
         <p>
@@ -247,11 +227,9 @@
         </p>
 
         <div class="math-block">
-            $$\mathbb{E}_{\tau \sim P_\theta} \left[\nabla_\theta \sum_{t=0}^H \log \pi_\theta(a_t|s_t) R(\tau)\right]$$
-        </div>
-
-        <div class="math-block">
-            $$\approx \frac{1}{N} \sum_{i=1}^N \left[\nabla_\theta \log \pi_\theta(a_t|s_t) R(\tau)\right]$$
+            $$\begin{align*}
+            \mathbb{E}_{\tau \sim P_\theta} \left[\nabla_\theta \sum_{t=0}^H \log \pi_\theta(a_t|s_t) R(\tau)\right] &\approx \frac{1}{N} \sum_{i=1}^N \left[\nabla_\theta \log \pi_\theta(a_t|s_t) R(\tau)\right]
+            \end{align*}$$
         </div>
 
         <p>
