@@ -68,12 +68,12 @@ body {
     text-align: left !important;
     margin: 0 !important;
     display: block !important;
-    font-size: 1.0em !important;
+    font-size: 19px !important;
 }
 
 .math-block .katex-display > .katex {
     text-align: left !important;
-    font-size: 1.0em !important;
+    font-size: 19px !important;
 }
 
 /* Hide equation numbers in align environments */
@@ -96,16 +96,16 @@ body {
 
 /* General KaTeX styling */
 .katex-display {
-    font-size: 1.0em !important;
+    font-size: 19px !important;
 }
 
 .katex-display > .katex {
-    font-size: 1.0em !important;
+    font-size: 19px !important;
 }
 
 /* Inline math */
 .katex {
-    font-size: 1.0em !important;
+    font-size: 19px !important;
 }
 
 .container {

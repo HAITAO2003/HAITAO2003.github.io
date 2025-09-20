@@ -379,35 +379,16 @@
         </p>
 
         <div class="math-block">
-            $$H(\pi) = -\mathbb{E}[\log \pi(a)]$$
-        </div>
-
-        <div class="math-block">
-            $$= \mathbb{E}\left[\frac{d}{2}\log(2\pi) + \frac{1}{2}\log|\Sigma| + \frac{1}{2}(a-\mu)^T \Sigma^{-1}(a-\mu)\right]$$
-        </div>
-
-        <div class="math-block">
-            $$= \frac{d}{2}\log(2\pi) + \frac{1}{2}\log|\Sigma| + \mathbb{E}\left[\frac{1}{2}(a-\mu)^T \Sigma^{-1}(a-\mu)\right]$$
-        </div>
-
-        <div class="math-block">
-            $$= \frac{d}{2}\log(2\pi) + \frac{1}{2}\log|\Sigma| + \frac{1}{2}\mathbb{E}\left[\text{Tr}(\Sigma^{-1}(a-\mu)(a-\mu)^T)\right]$$
-        </div>
-
-        <div class="math-block">
-            $$= \frac{d}{2}\log(2\pi) + \frac{1}{2}\log|\Sigma| + \frac{1}{2}\mathbb{E}\left[\text{Tr}(\Sigma^{-1}\Sigma)\right]$$
-        </div>
-
-        <div class="math-block">
-            $$= \frac{d}{2}\log(2\pi) + \frac{1}{2}\log|\Sigma| + \frac{d}{2}$$
-        </div>
-
-        <div class="math-block">
-            $$= \frac{1}{2}\log\left((2\pi e)^d |\Sigma|\right)$$
-        </div>
-
-        <div class="math-block">
-            $$= \frac{1}{2}\sum_{i=1}^d \log(2\pi e \sigma_i^2)$$
+            $$\begin{align*}
+            H(\pi) &= -\mathbb{E}[\log \pi(a)]\\
+            &= \mathbb{E}\left[\frac{d}{2}\log(2\pi) + \frac{1}{2}\log|\Sigma| + \frac{1}{2}(a-\mu)^T \Sigma^{-1}(a-\mu)\right]\\
+            &= \frac{d}{2}\log(2\pi) + \frac{1}{2}\log|\Sigma| + \mathbb{E}\left[\frac{1}{2}(a-\mu)^T \Sigma^{-1}(a-\mu)\right]\\
+            &= \frac{d}{2}\log(2\pi) + \frac{1}{2}\log|\Sigma| + \frac{1}{2}\mathbb{E}\left[\text{Tr}(\Sigma^{-1}(a-\mu)(a-\mu)^T)\right]\\
+            &= \frac{d}{2}\log(2\pi) + \frac{1}{2}\log|\Sigma| + \frac{1}{2}\mathbb{E}\left[\text{Tr}(\Sigma^{-1}\Sigma)\right]\\
+            &= \frac{d}{2}\log(2\pi) + \frac{1}{2}\log|\Sigma| + \frac{d}{2}\\
+            &= \frac{1}{2}\log\left((2\pi e)^d |\Sigma|\right)\\
+            &= \frac{1}{2}\sum_{i=1}^d \log(2\pi e \sigma_i^2)
+            \end{align*}$$
         </div>
 
         <p>
