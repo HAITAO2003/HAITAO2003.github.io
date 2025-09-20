@@ -12,6 +12,7 @@
             max-width: 800px;
             margin: 0 auto;
             padding: 40px 20px;
+            background-color: #ffffff;
         }
 
         .blog-post-content h1 {
@@ -103,7 +104,7 @@
         }
     </style>
 </head>
-<body>
+<body class="blog-page-body">
 <header>
     <div class="container">
         <nav>
@@ -111,9 +112,8 @@
             <div class="nav-links">
                 <a href="../index.html">Home</a>
                 <a href="../blog.html">Blog</a>
-                <a href="../projects.html">Projects</a>
                 <a href="../resources.html">Resources</a>
-                <a href="../forum.html">Forum</a>
+                <a href="../about.html">About</a>
             </div>
         </nav>
     </div>
@@ -398,32 +398,6 @@
             some exact analytical solutions in solving MDP problems.
         </p>
 
-        <!-- Post actions bar -->
-        <div class="post-actions-bar">
-            <button class="like-btn" onclick="toggleLike(1)">
-                <i class="far fa-heart"></i> <span class="like-count">0</span>
-            </button>
-            <button class="comment-btn" onclick="toggleComments(1)">
-                <i class="far fa-comment"></i> <span class="comment-count">0</span>
-            </button>
-            <span class="view-count"><i class="far fa-eye"></i> 0</span>
-            <button class="share-btn" onclick="sharePost()">
-                <i class="fas fa-share"></i> Share
-            </button>
-        </div>
-
-        <!-- Comments Section -->
-        <div class="comments-section post-comment-section" id="comments-2">
-            <h3>Comments</h3>
-            <div class="comment-form">
-                <input type="text" placeholder="Your name" class="comment-name" id="comment-name-2">
-                <textarea placeholder="Share your thoughts..." class="comment-text" id="comment-text-2"></textarea>
-                <button class="btn-primary" onclick="addComment(1)">Post Comment</button>
-            </div>
-            <div class="comments-list" id="comments-list-2">
-                <!-- Comments will be loaded here -->
-            </div>
-        </div>
 
         <a href="../blog.html" class="back-link">
             <i class="fas fa-arrow-left"></i> Back to Blog

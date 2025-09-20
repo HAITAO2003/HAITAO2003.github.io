@@ -12,6 +12,7 @@
             max-width: 800px;
             margin: 0 auto;
             padding: 40px 20px;
+            background-color: #ffffff;
         }
 
         .blog-post-content h1 {
@@ -120,42 +121,9 @@
             border: 1px solid var(--border-color);
         }
 
-        .post-actions-bar .like-btn,
-        .post-actions-bar .comment-btn,
-        .post-actions-bar .share-btn {
-            background: none;
-            border: none;
-            color: var(--text-dark);
-            cursor: pointer;
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            border-radius: 25px;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-
-        .post-actions-bar .like-btn:hover,
-        .post-actions-bar .comment-btn:hover,
-        .post-actions-bar .share-btn:hover {
-            background: var(--light-bg);
-            color: var(--accent-color);
-        }
-
-        .post-actions-bar .like-btn.liked {
-            color: var(--danger-color);
-        }
-
-        .post-comment-section {
-            margin-top: 30px;
-            padding-top: 30px;
-            border-top: 1px solid var(--border-color);
-        }
     </style>
 </head>
-<body>
+<body class="blog-page-body">
 <header>
     <div class="container">
         <nav>
@@ -163,9 +131,8 @@
             <div class="nav-links">
                 <a href="../index.html">Home</a>
                 <a href="../blog.html">Blog</a>
-                <a href="../projects.html">Projects</a>
                 <a href="../resources.html">Resources</a>
-                <a href="../forum.html">Forum</a>
+                <a href="../about.html">About</a>
             </div>
         </nav>
     </div>
@@ -561,32 +528,6 @@
             libraries while understanding the underlying implementation details.
         </p>
 
-        <!-- Post actions bar -->
-        <div class="post-actions-bar">
-            <button class="like-btn" onclick="toggleLike(0)">
-                <i class="far fa-heart"></i> <span class="like-count">0</span>
-            </button>
-            <button class="comment-btn" onclick="toggleComments(0)">
-                <i class="far fa-comment"></i> <span class="comment-count">0</span>
-            </button>
-            <span class="view-count"><i class="far fa-eye"></i> 0</span>
-            <button class="share-btn" onclick="sharePost()">
-                <i class="fas fa-share"></i> Share
-            </button>
-        </div>
-
-        <!-- Comments Section -->
-        <div class="comments-section post-comment-section" id="comments-3">
-            <h3>Comments</h3>
-            <div class="comment-form">
-                <input type="text" placeholder="Your name" class="comment-name" id="comment-name-3">
-                <textarea placeholder="Share your thoughts..." class="comment-text" id="comment-text-3"></textarea>
-                <button class="btn-primary" onclick="addComment(0)">Post Comment</button>
-            </div>
-            <div class="comments-list" id="comments-list-3">
-                <!-- Comments will be loaded here -->
-            </div>
-        </div>
 
         <a href="../blog.html" class="back-link">
             <i class="fas fa-arrow-left"></i> Back to Blog
