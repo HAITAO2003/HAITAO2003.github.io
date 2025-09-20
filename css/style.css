@@ -30,6 +30,32 @@ body {
     overflow-x: hidden;
 }
 
+/* Medium-style font for blog content */
+.blog-page-body {
+    background-color: #ffffff;
+    min-height: 100vh;
+}
+
+.blog-post-content,
+.blog-post-content p,
+.blog-post-content li {
+    font-family: charter, Georgia, Cambria, "Times New Roman", Times, serif;
+    font-size: 21px;
+    line-height: 1.58;
+    letter-spacing: -0.003em;
+}
+
+.blog-post-content h1,
+.blog-post-content h2,
+.blog-post-content h3,
+.blog-post-content h4,
+.blog-post-content h5,
+.blog-post-content h6 {
+    font-family: sohne, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.022em;
+}
+
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -488,10 +514,6 @@ footer {
 }
 
 /* Blog Page Specific Styles */
-.blog-page-body {
-    background-color: #ffffff;
-    min-height: 100vh;
-}
 
 .blog-header {
     text-align: center;
